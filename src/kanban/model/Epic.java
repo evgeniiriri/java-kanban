@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 public class Epic extends Task {
     private ArrayList<Integer> idSubTask = new ArrayList<>();
-    private Status status;
 
-    public Epic() {
-        super();
+    public Epic(String name, String description) {
+        super(name, description);
     }
 
     public ArrayList<Integer> getSubTasks() {
@@ -18,11 +17,22 @@ public class Epic extends Task {
         this.idSubTask.addAll(idSubTask);
     }
 
-    public void prrrr() {
-        System.out.println(status);;
-    }
-
     public void setSubTasks(int idSubTask) {
         this.idSubTask.add(idSubTask);
+    }
+
+    @Override
+    public String toString() {
+        String subTaskString;
+        if (idSubTask == null) {
+            subTaskString = "null";
+        }
+        subTaskString = String.valueOf(idSubTask.size());
+        return "Epic{" +
+                "status=" + status +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id + '\'' +
+                ", subTaks.size()='" + subTaskString + '}';
     }
 }

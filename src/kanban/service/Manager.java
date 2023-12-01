@@ -14,11 +14,8 @@ public class Manager {
     private HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     private HashMap<Integer, SubTask> subTaskHashMap = new HashMap<>();
-    private int id;
+    private int id = 1;
 
-    public Manager() {
-        this.id = 0;
-    }
 
 
     public ArrayList<Task> getAllTask() {
@@ -70,16 +67,20 @@ public class Manager {
         if (taskHashMap.containsValue(task)) {
             return;
         }
+        task.setStatus(Status.NEW);
+        task.setId(this.id);
         taskHashMap.put(this.id, task);
-        id++;
+        this.id++;
     }
 
     public void createEpic(Epic epic) {
         if (epicHashMap.containsValue(epic)) {
             return;
         }
+        epic.setStatus(Status.NEW);
+        epic.setId(this.id);
         epicHashMap.put(this.id, epic);
-        id++;
+        this.id++;
     }
 
     public void createSubTask(SubTask subTask, Epic epic) {
@@ -87,8 +88,11 @@ public class Manager {
             return;
         }
         subTask.setMyEpic(epic.getId());
+        subTask.setStatus(Status.NEW);
+        subTask.setId(this.id);
+        epic.setSubTasks(subTask.getId());
         subTaskHashMap.put(this.id, subTask);
-        id++;
+        this.id++;
     }
 
     public void updateTask(Task task) {
@@ -155,6 +159,7 @@ public class Manager {
         for (int subID : currentEpic.getSubTasks()) {
             statusSubTask.add(subTaskHashMap.get(subID).getStatus());
         }
+        System.out.println(statusSubTask);
         if (statusSubTask.size() >= 2) {
             currentEpic.setStatus(Status.IN_PROGRESS);
         } else {
