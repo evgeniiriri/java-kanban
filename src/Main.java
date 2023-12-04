@@ -4,8 +4,6 @@ import kanban.model.SubTask;
 import kanban.model.Task;
 import kanban.service.Manager;
 
-import java.util.ArrayList;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -32,9 +30,13 @@ public class Main {
         manager.createSubTask(testSubTask3, testEpic1);
         manager.createSubTask(testSubTask4, testEpic2);
 
+        System.out.println("Тест создания задач.");
+
         System.out.println(manager.getAllTask());
         System.out.println(manager.getAllEpic());
         System.out.println(manager.getAllSubTask());
+
+        System.out.println("Тест изменения статуса и обновления задач");
 
         testSubTask2.setStatus(Status.DONE);
         testTask1.setStatus(Status.IN_PROGRESS);
@@ -48,14 +50,14 @@ public class Main {
         System.out.println(manager.getAllEpic());
         System.out.println(manager.getAllSubTask());
 
+        System.out.println("Тест удаления.");
+
         manager.delTask(testTask1.getId());
         manager.delEpic(testEpic1.getId());
 
         System.out.println(manager.getAllTask());
         System.out.println(manager.getAllEpic());
         System.out.println(manager.getAllSubTask());
-
-
     }
 
 }

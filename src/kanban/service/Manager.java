@@ -159,7 +159,6 @@ public class Manager {
         for (int subID : currentEpic.getSubTasks()) {
             statusSubTask.add(subTaskHashMap.get(subID).getStatus());
         }
-        System.out.println(statusSubTask);
         if (statusSubTask.size() >= 2) {
             currentEpic.setStatus(Status.IN_PROGRESS);
         } else {

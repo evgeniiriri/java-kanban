@@ -1,12 +1,10 @@
 package kanban.model;
 
-import java.util.Objects;
-
 public class Task {
-    protected String name;
-    protected String description;
-    protected int id;
     protected Status status;
+    protected String name;
+    protected int id;
+    protected String description;
 
     public Task(String name, String description) {
         this.name = name;
@@ -46,10 +44,10 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                "status=" + status +
+                ", name='" + name + '\'' +
                 ", id=" + id +
-                ", status=" + status +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
