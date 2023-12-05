@@ -2,7 +2,7 @@ package kanban.service;
 
 import kanban.model.Epic;
 import kanban.model.Status;
-import kanban.model.SubTask;
+import kanban.model.Subtask;
 import kanban.model.Task;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.Set;
 public class Manager {
     private HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    private HashMap<Integer, SubTask> subTaskHashMap = new HashMap<>();
+    private HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     private int id = 1;
 
 
@@ -26,20 +26,27 @@ public class Manager {
         return new ArrayList<>(epicHashMap.values());
     }
 
-    public ArrayList<SubTask> getAllSubTask() {
+    public ArrayList<Subtask> getAllSubTask() {
         return new ArrayList<>(subTaskHashMap.values());
     }
 
-    public void delAllTasks() {
+    public void deleteAllTasks() {
         taskHashMap.clear();
     }
 
-    public void delAllEpic() {
+    public void deleteAllEpic() {
         epicHashMap.clear();
+        subTaskHashMap.clear();
     }
 
-    public void delAllSubTask() {
-        subTaskHashMap.clear();
+    public void deleteAllSubTask() {
+        for (Epic epic : epicHashMap.values()) {
+            for (int idSubtask : epic.getSubTasks()) {
+                delSubTask(idSubtask);
+                epic.deleteSubtaskID(id);
+            }
+            setStatus(epic.getId());
+        }
     }
 
     public Task getTask(int id) {
@@ -56,7 +63,7 @@ public class Manager {
         return epicHashMap.get(id);
     }
 
-    public SubTask getSubTask(int id) {
+    public Subtask getSubTask(int id) {
         if(!subTaskHashMap.containsKey(id)) {
             return null;
         }
@@ -83,7 +90,7 @@ public class Manager {
         this.id++;
     }
 
-    public void createSubTask(SubTask subTask, Epic epic) {
+    public void createSubTask(Subtask subTask, Epic epic) {
         if (subTaskHashMap.containsValue(subTask)) {
             return;
         }
@@ -110,7 +117,7 @@ public class Manager {
         setStatus(epic.getId());
     }
 
-    public void updateSubTask(SubTask subTask) {
+    public void updateSubTask(Subtask subTask) {
         if (subTask == null) {
             return;
         }
@@ -142,11 +149,11 @@ public class Manager {
         subTaskHashMap.remove(id);
     }
 
-    public ArrayList<SubTask> getAllSubTask(int id) {
+    public ArrayList<Subtask> getAllSubTask(int id) {
         if (!epicHashMap.containsKey(id)) {
             return null;
         }
-        ArrayList<SubTask> result = new ArrayList<>();
+        ArrayList<Subtask> result = new ArrayList<>();
         for (int idSubTask : epicHashMap.get(id).getSubTasks()) {
             result.add(subTaskHashMap.get(idSubTask));
         }
@@ -154,19 +161,25 @@ public class Manager {
 
     }
     private void setStatus(int epicID) {
-        Set<Status> statusSubTask = new HashSet<>();
-        Epic currentEpic = epicHashMap.get(epicID);
-        for (int subID : currentEpic.getSubTasks()) {
-            statusSubTask.add(subTaskHashMap.get(subID).getStatus());
+        Epic epic = epicHashMap.get(epicID);
+        //Проверим на пустой список подзадач.
+        if (epic.getSubTasks().isEmpty() || subTaskHashMap.isEmpty()) {
+            epic.setStatus(Status.NEW);
+            return;
         }
-        if (statusSubTask.size() >= 2) {
-            currentEpic.setStatus(Status.IN_PROGRESS);
-        } else {
-            if (!statusSubTask.add(Status.NEW)) {
-                currentEpic.setStatus(Status.NEW);
-            } else {
-                currentEpic.setStatus(Status.DONE);
+        //Получаем статус первой подзадачи.
+        Status sampleSubStatus = subTaskHashMap.get(epic.getSubTasks().get(0)).getStatus();
+        for (int i = 0; i < epic.getSubTasks().size(); i++) {
+            //Получаем статус текущей подзадачи.
+            System.out.println(i);
+            Status comareStatus =  subTaskHashMap.get(epic.getSubTasks().get(i)).getStatus();
+            //Если статусы подзадач не равны, то статус эпика в процессе, завершаем метод.
+            if (!sampleSubStatus.equals(comareStatus)) {
+                epic.setStatus(Status.IN_PROGRESS);
+                return;
             }
         }
+        // Если статусы равны, то статус эпика равен статусу первой подзадачи.
+        epic.setStatus(sampleSubStatus);
     }
 }

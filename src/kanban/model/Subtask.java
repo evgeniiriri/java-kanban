@@ -1,24 +1,24 @@
 package kanban.model;
 
-public class SubTask extends Task {
-    private int idMyEpic;
+public class Subtask extends Task {
+    private int epicID;
 
-    public SubTask(String name, String description) {
+    public Subtask(String name, String description) {
         super(name, description);
     }
 
     public int getMyEpic() {
-        return this.idMyEpic;
+        return this.epicID;
     }
 
     public void setMyEpic(int idMyEpic) {
-        this.idMyEpic = idMyEpic;
+        this.epicID = idMyEpic;
     }
 
     @Override
     public String toString() {
         return "SubTask{" +
-                "idMyEpic=" + idMyEpic +
+                "idMyEpic=" + epicID +
                 ", status=" + status +
                 ", name='" + name + '\'' +
                 ", id=" + id +

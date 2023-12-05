@@ -21,13 +21,16 @@ public class Epic extends Task {
         this.idSubTask.add(idSubTask);
     }
 
+    public void deleteSubtaskID(int id) {
+        if (idSubTask.contains(id)){
+            idSubTask.remove(id);
+        }
+
+    }
+
     @Override
     public String toString() {
-        String subTaskString;
-        if (idSubTask == null) {
-            subTaskString = "null";
-        }
-        subTaskString = String.valueOf(idSubTask.size());
+        String subTaskString = (idSubTask == null) ? "null" : String.valueOf(idSubTask.size());
         return "Epic{" +
                 "status=" + status +
                 ", name='" + name + '\'' +

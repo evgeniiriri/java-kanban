@@ -37,6 +37,10 @@ public class Task {
         this.status = status;
     }
 
+    public boolean isEqualsStatus(Status status) {
+        return this.status.equals(status);
+    }
+
     public int getId() {
         return id;
     }
