@@ -25,7 +25,6 @@ public class Epic extends Task {
         if (idSubTask.contains(id)){
             idSubTask.remove(id);
         }
-
     }
 
     @Override

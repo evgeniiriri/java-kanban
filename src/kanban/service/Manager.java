@@ -7,8 +7,6 @@ import kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Manager {
     private HashMap<Integer, Task> taskHashMap = new HashMap<>();
@@ -40,10 +38,10 @@ public class Manager {
     }
 
     public void deleteAllSubTask() {
+        subTaskHashMap.clear();
         for (Epic epic : epicHashMap.values()) {
-            for (int idSubtask : epic.getSubTasks()) {
-                delSubTask(idSubtask);
-                epic.deleteSubtaskID(id);
+            for (int i = 0; i < epic.getSubTasks().size(); i++) {
+                epic.deleteSubtaskID(i);
             }
             setStatus(epic.getId());
         }
@@ -125,24 +123,24 @@ public class Manager {
         setStatus(epicHashMap.get(subTask.getMyEpic()).getId());
     }
 
-    public void delTask(int id) {
+    public void deleteTask(int id) {
         if (!taskHashMap.containsKey(id)) {
             return;
         }
         taskHashMap.remove(id);
     }
 
-    public void delEpic(int id) {
+    public void deleteEpic(int id) {
         if (!epicHashMap.containsKey(id)) {
             return;
         }
         for (int subID : epicHashMap.get(id).getSubTasks()) {
-            delSubTask(subID);
+            deleteSubTask(subID);
         }
         epicHashMap.remove(id);
     }
 
-    public void delSubTask(int id) {
+    public void deleteSubTask(int id) {
         if (!subTaskHashMap.containsKey(id)) {
             return;
         }
@@ -162,8 +160,8 @@ public class Manager {
     }
     private void setStatus(int epicID) {
         Epic epic = epicHashMap.get(epicID);
-        //Проверим на пустой список подзадач.
-        if (epic.getSubTasks().isEmpty() || subTaskHashMap.isEmpty()) {
+
+        if (epic.getSubTasks().isEmpty() || subTaskHashMap.isEmpty() ) {
             epic.setStatus(Status.NEW);
             return;
         }
@@ -171,15 +169,13 @@ public class Manager {
         Status sampleSubStatus = subTaskHashMap.get(epic.getSubTasks().get(0)).getStatus();
         for (int i = 0; i < epic.getSubTasks().size(); i++) {
             //Получаем статус текущей подзадачи.
-            System.out.println(i);
             Status comareStatus =  subTaskHashMap.get(epic.getSubTasks().get(i)).getStatus();
-            //Если статусы подзадач не равны, то статус эпика в процессе, завершаем метод.
+
             if (!sampleSubStatus.equals(comareStatus)) {
                 epic.setStatus(Status.IN_PROGRESS);
                 return;
             }
         }
-        // Если статусы равны, то статус эпика равен статусу первой подзадачи.
         epic.setStatus(sampleSubStatus);
     }
 }

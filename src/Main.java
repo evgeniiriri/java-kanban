@@ -37,23 +37,20 @@ public class Main {
         System.out.println(manager.getAllSubTask());
 
         System.out.println("Тест изменения статуса и обновления задач");
+        testSubtask1.setStatus(Status.DONE);
+        manager.updateSubTask(testSubtask1);
 
-        testSubtask2.setStatus(Status.DONE);
-        testTask1.setStatus(Status.IN_PROGRESS);
-        manager.updateSubTask(testSubtask2);
-        manager.updateTask(testTask1);
 
         Subtask testSubtask5 = new Subtask("Тест обновления епика.", "Описание.");
         manager.createSubTask(testSubtask5, testEpic2);
 
-        System.out.println(manager.getAllTask());
+         System.out.println(manager.getAllTask());
         System.out.println(manager.getAllEpic());
         System.out.println(manager.getAllSubTask());
 
         System.out.println("Тест удаления.");
 
-        manager.delTask(testTask1.getId());
-//        manager.delEpic(testEpic1.getId());
+        manager.deleteTask(testTask1.getId());
         manager.deleteAllSubTask();
 
         System.out.println(manager.getAllTask());
