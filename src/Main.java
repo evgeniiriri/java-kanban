@@ -3,6 +3,7 @@ import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.Manager;
+import kanban.service.TaskManager;
 
 public class Main {
 
@@ -10,7 +11,7 @@ public class Main {
 
         System.out.println("Поехали!");
 
-        Manager manager = new Manager();
+        TaskManager manager = Manager.getDefault();
 
         Task testTask1 = new Task("Кот", "Покормить, напоить.");
         Task testTask2 = new Task("Попугай", "Покормить, напоить.");
@@ -29,6 +30,22 @@ public class Main {
         manager.createSubTask(testSubtask2, testEpic1);
         manager.createSubTask(testSubtask3, testEpic1);
         manager.createSubTask(testSubtask4, testEpic2);
+
+        manager.getEpic(4);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getTask(2);
+        manager.getEpic(4);
+
+        System.out.println(manager.getHistory());
 
         System.out.println("Тест создания задач.");
 
