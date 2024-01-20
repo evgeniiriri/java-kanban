@@ -10,11 +10,11 @@ import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> taskHashMap = new HashMap<>();
-    private HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    private HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
+    private final HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    private final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
+    private final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     private int id = 1;
-    private InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+    private final InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 
     @Override
     public ArrayList<Task> getHistory() {
@@ -109,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubTask(Subtask subTask, Epic epic) {
-        if (subTaskHashMap.containsValue(subTask)) {
+        if (subTaskHashMap.containsValue(subTask) || epicHashMap.containsKey(id)) {
             return;
         }
         subTask.setMyEpic(epic.getId());
@@ -143,7 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         subTaskHashMap.put(subTask.getId(), subTask);
-        setStatus(epicHashMap.get(subTask.getMyEpic()).getId());
+        setStatus(epicHashMap.get(subTask.getMyEpicId()).getId());
     }
 
     @Override
