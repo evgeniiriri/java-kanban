@@ -12,15 +12,20 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class InMemoryTaskManagerTest {
     private static TaskManager inMemoryTaskManager;
+    private static Epic epic;
+    private static Subtask subtask;
+    private static Task task;
 
     @BeforeEach
     public void beforeEach() {
         inMemoryTaskManager = new InMemoryTaskManager();
+        epic = new Epic("Epic test", "Epic test test");
+        subtask = new Subtask("Subtask test", "Subtask test test");
+        task = new Task("Task test", "Task test test");
     }
 
     @Test
     public void equalsTasksIdAndObjectTaskTest() {
-        Task task = new Task("test", "test test");
         inMemoryTaskManager.createTask(task);
         int idTask = 1;
 
@@ -30,8 +35,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void equalsHeirsTasksWithIdAndObjectTest() {
-        Epic epic = new Epic("Epic test", "Epic Test test");
-        Subtask subtask = new Subtask("Subtask test", "Subtask test test");
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -47,8 +50,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void attachmentSubtaskToEpicTest() {
-        Epic epic = new Epic("Epic test", "Epic Test test");
-        Subtask subtask = new Subtask("Subtask test", "Subtask test test");
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -64,6 +65,27 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(0, manager.getAllTask().size());
         Assertions.assertEquals(0, manager.getAllEpic().size());
         Assertions.assertEquals(0, manager.getAllSubTask().size());
+    }
+
+    @Test
+    public void CreateUpdateDeleteOperationTest() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
+        Assertions.assertFalse(inMemoryTaskManager.getAllTask().isEmpty());
+        Assertions.assertFalse(inMemoryTaskManager.getAllEpic().isEmpty());
+        Assertions.assertFalse(inMemoryTaskManager.getAllSubTask().isEmpty());
+
+        Task newTask = new Task("New task", "New description");
+        Epic newEpic = new Epic("New task", "New description");
+        Subtask newSubtask = new Subtask("New task", "New description");
+
+        inMemoryTaskManager.updateTask(newTask);
+        inMemoryTaskManager.updateEpic(newEpic);
+        inMemoryTaskManager.updateSubTask(newSubtask);
+
+        //как взять id обновляемой задачи?
     }
 
 

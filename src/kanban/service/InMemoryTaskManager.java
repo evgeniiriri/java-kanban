@@ -18,21 +18,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getHistory() {
+
         return inMemoryHistoryManager.getHistory();
     }
 
     @Override
     public ArrayList<Task> getAllTask() {
+        for (Task task : taskHashMap.values()) {
+            inMemoryHistoryManager.add(task);
+        }
         return new ArrayList<>(taskHashMap.values());
     }
 
     @Override
     public ArrayList<Epic> getAllEpic() {
+        for (Epic epic : epicHashMap.values()) {
+            inMemoryHistoryManager.add(epic);
+        }
         return new ArrayList<>(epicHashMap.values());
     }
 
     @Override
     public ArrayList<Subtask> getAllSubTask() {
+        for (Subtask subtasks : subTaskHashMap.values()) {
+            inMemoryHistoryManager.add(subtasks);
+        }
         return new ArrayList<>(subTaskHashMap.values());
     }
 
@@ -125,6 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task == null) {
             return;
         }
+
         taskHashMap.put(task.getId(), task);
     }
 
