@@ -131,29 +131,31 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void updateTask(int id, Task task) {
         if (task == null) {
             return;
         }
-
-        taskHashMap.put(task.getId(), task);
+        task.setId(id);
+        taskHashMap.put(id, task);
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public void updateEpic(int id, Epic epic) {
         if (epic == null) {
             return;
         }
-        epicHashMap.put(epic.getId(), epic);
+        epic.setId(id);
+        epicHashMap.put(id, epic);
         setStatus(epic.getId());
     }
 
     @Override
-    public void updateSubTask(Subtask subTask) {
+    public void updateSubTask(int id, Subtask subTask) {
         if (subTask == null) {
             return;
         }
-        subTaskHashMap.put(subTask.getId(), subTask);
+        subTask.setId(id);
+        subTaskHashMap.put(id, subTask);
         setStatus(epicHashMap.get(subTask.getMyEpicId()).getId());
     }
 

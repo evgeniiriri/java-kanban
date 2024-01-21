@@ -1,6 +1,7 @@
 package kanban.test;
 
 import kanban.model.Epic;
+import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.InMemoryTaskManager;
@@ -68,7 +69,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void CreateUpdateDeleteOperationTest() {
+    public void CreateOperationTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -76,21 +77,80 @@ public class InMemoryTaskManagerTest {
         Assertions.assertFalse(inMemoryTaskManager.getAllTask().isEmpty());
         Assertions.assertFalse(inMemoryTaskManager.getAllEpic().isEmpty());
         Assertions.assertFalse(inMemoryTaskManager.getAllSubTask().isEmpty());
+    }
 
+    @Test
+    public void UpdateOperationTest() {
         Task newTask = new Task("New task", "New description");
         Epic newEpic = new Epic("New task", "New description");
         Subtask newSubtask = new Subtask("New task", "New description");
 
-        inMemoryTaskManager.updateTask(newTask);
-        inMemoryTaskManager.updateEpic(newEpic);
-        inMemoryTaskManager.updateSubTask(newSubtask);
+        newTask.setId(task.getId());
+        newEpic.setId(epic.getId());
+        newSubtask.setId(subtask.getId());
+        newSubtask.setMyEpic(newEpic.getId());
+        newEpic.setSubTasks(newSubtask.getId());
+        newSubtask.setStatus(Status.NEW);
 
-        //как взять id обновляемой задачи?
+        inMemoryTaskManager.updateTask(task.getId(), newTask);
+        inMemoryTaskManager.updateEpic(epic.getId(), newEpic);
+        inMemoryTaskManager.updateSubTask(subtask.getId(), newSubtask);
+
+        Assertions.assertEquals("New task",
+                inMemoryTaskManager.getTask(newTask.getId()).getName());
+        Assertions.assertEquals("New task",
+                inMemoryTaskManager.getEpic(newEpic.getId()).getName());
+        Assertions.assertEquals("New task",
+                inMemoryTaskManager.getSubTask(newSubtask.getId()).getName());
     }
 
+    @Test
+    public void DeleteOperationTest() {
+        inMemoryTaskManager.deleteTask(task.getId());
+        inMemoryTaskManager.deleteEpic(epic.getId());
+
+        Assertions.assertTrue(inMemoryTaskManager.getAllTask().isEmpty());
+        Assertions.assertTrue(inMemoryTaskManager.getAllEpic().isEmpty());
+        Assertions.assertTrue(inMemoryTaskManager.getAllSubTask().isEmpty());
+    }
+
+    @Test
+    public void shouldSaveHistoryTaskTest() {
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+
+        Assertions.assertEquals(3, inMemoryTaskManager.getHistory().size());
+    }
+
+    @Test
+    public void shouldSaveTo10TaskTest() {
+        for (int i = 0; i < 12; i++) {
+            inMemoryTaskManager.getTask(task.getId());
+        }
+
+        Assertions.assertEquals(10, inMemoryTaskManager.getHistory().size());
+    }
+
+    @Test
+    public void shouldShowRemoveTaskInHistoryTest() {
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+
+        inMemoryTaskManager.deleteTask(task.getId());
+
+        Assertions.assertEquals();
 
 
-
-
+    }
 
 }
