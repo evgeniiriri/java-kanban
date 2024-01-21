@@ -116,6 +116,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldSaveHistoryTaskTest() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
         inMemoryTaskManager.getTask(task.getId());
         inMemoryTaskManager.getEpic(epic.getId());
         inMemoryTaskManager.getSubTask(subtask.getId());
@@ -125,8 +129,13 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldSaveTo10TaskTest() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
         for (int i = 0; i < 12; i++) {
             inMemoryTaskManager.getTask(task.getId());
+            inMemoryTaskManager.getEpic(epic.getId());
+            inMemoryTaskManager.getSubTask(subtask.getId());
         }
 
         Assertions.assertEquals(10, inMemoryTaskManager.getHistory().size());
@@ -134,10 +143,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldShowRemoveTaskInHistoryTest() {
-        inMemoryTaskManager.getTask(task.getId());
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubTask(subtask.getId());
-
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -146,9 +151,11 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.getEpic(epic.getId());
         inMemoryTaskManager.getSubTask(subtask.getId());
 
+        inMemoryTaskManager.getTask(task.getId());
+
         inMemoryTaskManager.deleteTask(task.getId());
 
-        Assertions.assertEquals();
+        Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
 
 
     }
