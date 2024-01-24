@@ -6,17 +6,17 @@ import kanban.service.TaskManager;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException{
 
         System.out.println("Поехали!");
         TaskManager manager = Manager.getDefault();
         printAllTasks(manager);
     }
 
-    private static void printAllTasks(TaskManager manager) {
+    private static void printAllTasks(TaskManager manager) throws CloneNotSupportedException{
         Task testTask1 = new Task("Кот", "Покормить, напоить.");
         Task testTask2 = new Task("Попугай", "Покормить, напоить.");
-        Epic testEpic1 = new Epic("Зарядка" , "...");
+        Epic testEpic1 = new Epic("Зарядка", "...");
         Epic testEpic2 = new Epic("Покупки", "Список продуктов.");
         Subtask testSubtask1 = new Subtask("Анжумания", "От пола.");
         Subtask testSubtask2 = new Subtask("Прец качат", "100 раз");
@@ -52,6 +52,28 @@ public class Main {
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
+            task.setDescription("fdsjshvgfsfhisd");
+        }
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        System.out.println("Задачи:");
+        for (Task task : manager.getAllTask()) {
+            System.out.println(task);
+        }
+        System.out.println("Эпики:");
+        for (Task epic : manager.getAllEpic()) {
+            System.out.println(epic);
+
+            for (Task task : manager.getAllSubTask(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getAllSubTask()) {
+            System.out.println(subtask);
         }
     }
 

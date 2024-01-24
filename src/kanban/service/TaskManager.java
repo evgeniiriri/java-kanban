@@ -11,11 +11,11 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    ArrayList<Task> getAllTask();
+    ArrayList<Task> getAllTask() throws CloneNotSupportedException;
 
-    ArrayList<Epic> getAllEpic();
+    ArrayList<Epic> getAllEpic() throws CloneNotSupportedException;
 
-    ArrayList<Subtask> getAllSubTask();
+    ArrayList<Subtask> getAllSubTask() throws CloneNotSupportedException;
 
     ArrayList<Subtask> getAllSubTask(int id);
 
@@ -25,11 +25,11 @@ public interface TaskManager {
 
     void deleteAllSubTask();
 
-    Task getTask(int id);
+    Task getTask(int id) throws CloneNotSupportedException;
 
-    Epic getEpic(int id);
+    Epic getEpic(int id) throws CloneNotSupportedException;
 
-    Subtask getSubTask(int id);
+    Subtask getSubTask(int id) throws CloneNotSupportedException;
 
     void createTask(Task task);
 

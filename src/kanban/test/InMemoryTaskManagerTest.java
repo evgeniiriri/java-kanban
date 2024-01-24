@@ -26,7 +26,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void equalsTasksIdAndObjectTaskTest() {
+    public void equalsTasksIdAndObjectTaskTest() throws CloneNotSupportedException {
         inMemoryTaskManager.createTask(task);
         int idTask = 1;
 
@@ -35,7 +35,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void equalsHeirsTasksWithIdAndObjectTest() {
+    public void equalsHeirsTasksWithIdAndObjectTest() throws CloneNotSupportedException{
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -50,7 +50,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void attachmentSubtaskToEpicTest() {
+    public void attachmentSubtaskToEpicTest() throws CloneNotSupportedException{
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -60,7 +60,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void InitManagerTest() {
+    public void InitManagerTest() throws CloneNotSupportedException{
         TaskManager manager = Manager.getDefault();
 
         Assertions.assertEquals(0, manager.getAllTask().size());
@@ -69,7 +69,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void CreateOperationTest() {
+    public void CreateOperationTest() throws CloneNotSupportedException{
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -80,7 +80,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void UpdateOperationTest() {
+    public void UpdateOperationTest() throws CloneNotSupportedException{
         Task newTask = new Task("New task", "New description");
         Epic newEpic = new Epic("New task", "New description");
         Subtask newSubtask = new Subtask("New task", "New description");
@@ -105,7 +105,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void DeleteOperationTest() {
+    public void DeleteOperationTest() throws CloneNotSupportedException{
         inMemoryTaskManager.deleteTask(task.getId());
         inMemoryTaskManager.deleteEpic(epic.getId());
 
@@ -115,7 +115,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSaveHistoryTaskTest() {
+    public void shouldSaveHistoryTaskTest() throws CloneNotSupportedException{
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -128,7 +128,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSaveTo10TaskTest() {
+    public void shouldSaveTo10TaskTest() throws CloneNotSupportedException{
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -142,7 +142,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldShowRemoveTaskInHistoryTest() {
+    public void shouldShowRemoveTaskInHistoryTest()throws CloneNotSupportedException {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);

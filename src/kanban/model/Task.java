@@ -2,7 +2,7 @@ package kanban.model;
 
 import java.util.Objects;
 
-public class Task implements TaskInterface {
+public class Task implements TaskInterface, Cloneable {
     protected boolean view;
     protected Status status;
     protected String name;
@@ -13,6 +13,11 @@ public class Task implements TaskInterface {
         this.name = name;
         this.description = description;
         this.view = false;
+    }
+
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        return (Task) super.clone();
     }
 
     @Override

@@ -10,21 +10,12 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
 
     private final List<T> storage = new ArrayList<>();
 
-
-//    @Override
-//    public void add(T task) {
-//        if (storage.size() == 10) {
-//            storage.remove(0);
-//        }
-//        storage.add(task);
-//    }
-
-    public void add(T task) {
+    public void add(T task) throws CloneNotSupportedException {
         if (storage.size() == 10) {
             storage.remove(0);
         }
-        
-        storage.add((T) task);
+        Task clon = task.clone();
+        storage.add((T) clon);
     }
 
 

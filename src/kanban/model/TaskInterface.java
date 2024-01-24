@@ -2,6 +2,7 @@ package kanban.model;
 
 public interface TaskInterface {
     boolean isView();
+
     String getName();
 
     void setName(String name);

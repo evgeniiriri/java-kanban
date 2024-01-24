@@ -3,11 +3,16 @@ package kanban.model;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Epic extends Task {
+public class Epic extends Task implements Cloneable {
     private final ArrayList<Integer> idSubTask = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
+    }
+
+    @Override
+    public Epic clone() throws CloneNotSupportedException {
+        return (Epic) super.clone();
     }
 
     public ArrayList<Integer> getSubTasks() {

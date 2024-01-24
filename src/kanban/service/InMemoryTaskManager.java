@@ -23,7 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getAllTask() {
+    public ArrayList<Task> getAllTask() throws CloneNotSupportedException {
         for (Task task : taskHashMap.values()) {
             inMemoryHistoryManager.add(task);
         }
@@ -31,7 +31,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Epic> getAllEpic() {
+    public ArrayList<Epic> getAllEpic() throws CloneNotSupportedException {
         for (Epic epic : epicHashMap.values()) {
             inMemoryHistoryManager.add(epic);
         }
@@ -39,7 +39,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubTask() {
+    public ArrayList<Subtask> getAllSubTask() throws CloneNotSupportedException {
         for (Subtask subtasks : subTaskHashMap.values()) {
             inMemoryHistoryManager.add(subtasks);
         }
@@ -69,7 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(int id) {
+    public Task getTask(int id) throws CloneNotSupportedException {
         if (!taskHashMap.containsKey(id)) {
             return null;
         }
@@ -78,7 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Epic getEpic(int id) {
+    public Epic getEpic(int id) throws CloneNotSupportedException {
         if (!epicHashMap.containsKey(id)) {
             return null;
         }
@@ -87,7 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubTask(int id) {
+    public Subtask getSubTask(int id) throws CloneNotSupportedException {
         if(!subTaskHashMap.containsKey(id)) {
             return null;
         }

@@ -2,7 +2,7 @@ package kanban.model;
 
 import java.util.Objects;
 
-public class Subtask extends Task {
+public class Subtask extends Task implements Cloneable{
     private int epicID;
 
     public Subtask(String name, String description) {
@@ -35,6 +35,11 @@ public class Subtask extends Task {
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
         return epicID == subtask.epicID;
+    }
+
+    @Override
+    public Subtask clone() throws CloneNotSupportedException {
+        return (Subtask) super.clone();
     }
 
     @Override
