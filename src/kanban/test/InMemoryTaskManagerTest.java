@@ -151,13 +151,14 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.getEpic(epic.getId());
         inMemoryTaskManager.getSubTask(subtask.getId());
 
-        inMemoryTaskManager.getTask(task.getId());
+        Assertions.assertEquals(inMemoryTaskManager.getTask(task.getId()), inMemoryTaskManager.getHistory().get(0));
 
         inMemoryTaskManager.deleteTask(task.getId());
 
+        Assertions.assertNotEquals(inMemoryTaskManager.getTask(task.getId()), inMemoryTaskManager.getHistory().get(0));
         Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
-
-
+        Assertions.assertEquals(epic, inMemoryTaskManager.getHistory().get(1));
+        Assertions.assertEquals(subtask, inMemoryTaskManager.getHistory().get(2));
     }
 
 }

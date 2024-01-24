@@ -7,6 +7,7 @@ import kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -14,11 +15,10 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     private final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     private int id = 1;
-    private final InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+    private final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
 
     @Override
-    public ArrayList<Task> getHistory() {
-
+    public List<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
     }
 

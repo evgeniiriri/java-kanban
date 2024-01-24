@@ -5,16 +5,19 @@ import kanban.model.Subtask;
 import kanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
     ArrayList<Task> getAllTask();
 
     ArrayList<Epic> getAllEpic();
 
     ArrayList<Subtask> getAllSubTask();
+
+    ArrayList<Subtask> getAllSubTask(int id);
 
     void deleteAllTasks();
 
@@ -45,8 +48,6 @@ public interface TaskManager {
     void deleteEpic(int id);
 
     void deleteSubTask(int id);
-
-    ArrayList<Subtask> getAllSubTask(int id);
 
     void setStatus(int epicID);
 }
