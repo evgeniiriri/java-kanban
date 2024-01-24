@@ -4,7 +4,6 @@ import kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T> {
 
