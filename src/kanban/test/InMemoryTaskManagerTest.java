@@ -7,6 +7,7 @@ import kanban.model.Task;
 import kanban.service.InMemoryTaskManager;
 import kanban.service.Manager;
 import kanban.service.TaskManager;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void equalsTasksIdAndObjectTaskTest() throws CloneNotSupportedException {
+    public void equalsTasksIdAndObjectTaskTest() {
         inMemoryTaskManager.createTask(task);
         int idTask = 1;
 
@@ -35,7 +36,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void equalsHeirsTasksWithIdAndObjectTest() throws CloneNotSupportedException{
+    public void equalsHeirsTasksWithIdAndObjectTest() {
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -50,7 +51,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void attachmentSubtaskToEpicTest() throws CloneNotSupportedException{
+    public void attachmentSubtaskToEpicTest() {
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -60,7 +61,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void InitManagerTest() throws CloneNotSupportedException{
+    public void InitManagerTest() {
         TaskManager manager = Manager.getDefault();
 
         Assertions.assertEquals(0, manager.getAllTask().size());
@@ -69,7 +70,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void CreateOperationTest() throws CloneNotSupportedException{
+    public void CreateOperationTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -80,7 +81,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void UpdateOperationTest() throws CloneNotSupportedException{
+    public void UpdateOperationTest() {
         Task newTask = new Task("New task", "New description");
         Epic newEpic = new Epic("New task", "New description");
         Subtask newSubtask = new Subtask("New task", "New description");
@@ -105,7 +106,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void DeleteOperationTest() throws CloneNotSupportedException{
+    public void DeleteOperationTest() {
         inMemoryTaskManager.deleteTask(task.getId());
         inMemoryTaskManager.deleteEpic(epic.getId());
 
@@ -115,7 +116,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSaveHistoryTaskTest() throws CloneNotSupportedException{
+    public void shouldSaveHistoryTaskTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -128,7 +129,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSaveTo10TaskTest() throws CloneNotSupportedException{
+    public void shouldSaveTo10TaskTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -142,7 +143,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldShowRemoveTaskInHistoryTest()throws CloneNotSupportedException {
+    public void shouldShowRemoveTaskInHistoryTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -159,6 +160,29 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
         Assertions.assertEquals(epic, inMemoryTaskManager.getHistory().get(1));
         Assertions.assertEquals(subtask, inMemoryTaskManager.getHistory().get(2));
+    }
+
+    @Test
+    public void shouldIndependenceTasksAndHistory() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+
+        String descriptionBefore = inMemoryTaskManager.getTask(task.getId()).getDescription();
+
+        Assertions.assertEquals("Task test test", descriptionBefore);
+
+        inMemoryTaskManager.getHistory().get(0).setDescription("History description");
+        String descriptionHistory = inMemoryTaskManager.getHistory().get(0).getDescription();
+
+        Assertions.assertEquals("History description", descriptionHistory);
+        Assertions.assertNotEquals(inMemoryTaskManager.getTask(task.getId()).getDescription(),
+                inMemoryTaskManager.getHistory().get(0).getDescription());
+        Assertions.assertNotEquals(task, inMemoryTaskManager.getHistory().get(0));
     }
 
 }

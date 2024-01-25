@@ -18,6 +18,11 @@ public class Subtask extends Task implements Cloneable{
     }
 
     @Override
+    public Subtask clone() throws CloneNotSupportedException {
+        return (Subtask) super.clone();
+    }
+
+    @Override
     public String toString() {
         return "SubTask{" +
                 "idMyEpic=" + epicID +
@@ -35,11 +40,6 @@ public class Subtask extends Task implements Cloneable{
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
         return epicID == subtask.epicID;
-    }
-
-    @Override
-    public Subtask clone() throws CloneNotSupportedException {
-        return (Subtask) super.clone();
     }
 
     @Override

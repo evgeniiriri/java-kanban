@@ -1,6 +1,7 @@
 package kanban.model;
 
 public interface TaskInterface {
+
     boolean isView();
 
     String getName();

@@ -9,11 +9,19 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
 
     private final List<T> storage = new ArrayList<>();
 
-    public void add(T task) throws CloneNotSupportedException {
+    public void add(T task) {
         if (storage.size() == 10) {
             storage.remove(0);
         }
-        Task clon = task.clone();
+        //Тут мы должны ловить ошибку, которую выкидывают Task'и при неудачном клонировании.
+        Task clon;
+        try {
+            clon = task.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new AssertionError(); //И складывать программу, если что-то не то.
+                                        //Наверно это не лучший способ 8)
+                                        //Пока с исключениями знаком отдаленно.
+        }
         storage.add((T) clon);
     }
 

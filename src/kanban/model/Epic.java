@@ -10,11 +10,6 @@ public class Epic extends Task implements Cloneable {
         super(name, description);
     }
 
-    @Override
-    public Epic clone() throws CloneNotSupportedException {
-        return (Epic) super.clone();
-    }
-
     public ArrayList<Integer> getSubTasks() {
         return this.idSubTask;
     }
@@ -28,20 +23,25 @@ public class Epic extends Task implements Cloneable {
     }
 
     public void deleteSubtaskID(int id) {
-        if (idSubTask.contains(id)){
+        if (idSubTask.contains(id)) {
             idSubTask.remove(id);
         }
     }
 
     @Override
+    public Epic clone() throws CloneNotSupportedException {
+        return (Epic) super.clone();
+    }
+
+    @Override
     public String toString() {
-        String subTaskString = (idSubTask == null) ? "null" : String.valueOf(idSubTask.size());
+        String subtaskSize = String.valueOf(idSubTask.size());
         return "Epic{" +
                 "status=" + status +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id + '\'' +
-                ", subTaks.size()='" + subTaskString + '}';
+                ", size='" + subtaskSize + '}';
     }
 
     @Override

@@ -4,20 +4,19 @@ import kanban.model.Epic;
 import kanban.model.Subtask;
 import kanban.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
 
     List<Task> getHistory();
 
-    ArrayList<Task> getAllTask() throws CloneNotSupportedException;
+    List<Task> getAllTask();
 
-    ArrayList<Epic> getAllEpic() throws CloneNotSupportedException;
+    List<Epic> getAllEpic();
 
-    ArrayList<Subtask> getAllSubTask() throws CloneNotSupportedException;
+    List<Subtask> getAllSubTask();
 
-    ArrayList<Subtask> getAllSubTask(int id);
+    List<Subtask> getAllSubTask(int id);
 
     void deleteAllTasks();
 
@@ -25,11 +24,11 @@ public interface TaskManager {
 
     void deleteAllSubTask();
 
-    Task getTask(int id) throws CloneNotSupportedException;
+    Task getTask(int id);
 
-    Epic getEpic(int id) throws CloneNotSupportedException;
+    Epic getEpic(int id);
 
-    Subtask getSubTask(int id) throws CloneNotSupportedException;
+    Subtask getSubTask(int id);
 
     void createTask(Task task);
 
