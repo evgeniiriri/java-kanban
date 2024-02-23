@@ -3,6 +3,7 @@ import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.Manager;
 import kanban.service.TaskManager;
+import kanban.service.tasklist.LinkedListTasks;
 
 public class Main {
 
@@ -10,7 +11,17 @@ public class Main {
 
         System.out.println("Поехали!");
         TaskManager manager = Manager.getDefault();
-        printAllTasks(manager);
+//        printAllTasks(manager);
+        LinkedListTasks<Integer> linkedListTasks = new LinkedListTasks<>();
+        for (int i = 0; i < 10; i++) {
+            linkedListTasks.linkLast(i);
+            System.out.println(i);
+        }
+
+        for (Integer x : linkedListTasks.getTasks()) {
+            System.out.println(x);
+        }
+
     }
 
     private static void printAllTasks(TaskManager manager){

@@ -25,9 +25,12 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         storage.add((T) clon);
     }
 
-
     @Override
     public List<T> getHistory() {
         return List.copyOf(storage);
+    }
+
+    public void remove(int id) {
+        //in works.
     }
 }
