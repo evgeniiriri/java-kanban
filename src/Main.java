@@ -11,16 +11,16 @@ public class Main {
 
         System.out.println("Поехали!");
         TaskManager manager = Manager.getDefault();
-//        printAllTasks(manager);
-        LinkedListTasks<Integer> linkedListTasks = new LinkedListTasks<>();
-        for (int i = 0; i < 10; i++) {
-            linkedListTasks.linkLast(i);
-            System.out.println(i);
-        }
-
-        for (Integer x : linkedListTasks.getTasks()) {
-            System.out.println(x);
-        }
+        printAllTasks(manager);
+//        LinkedListTasks<Integer> linkedListTasks = new LinkedListTasks<>();
+//        for (int i = 0; i < 10; i++) {
+//            linkedListTasks.linkLast(i);
+//            System.out.println(i);
+//        }
+//
+//        for (Integer x : linkedListTasks.getTasks()) {
+//            System.out.println(x);
+//        }
 
     }
 
@@ -59,6 +59,13 @@ public class Main {
         for (Task subtask : manager.getAllSubTask()) {
             System.out.println(subtask);
         }
+
+        manager.getTask(testTask1.getId());
+        manager.getTask(testTask1.getId());
+        manager.getTask(testTask1.getId());
+        manager.getTask(testTask2.getId());
+        manager.getEpic(testEpic1.getId());
+        manager.getEpic(testEpic1.getId());
 
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
