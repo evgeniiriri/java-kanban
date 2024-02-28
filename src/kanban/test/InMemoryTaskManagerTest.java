@@ -129,20 +129,6 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSaveTo10TaskTest() {
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createSubTask(subtask, epic);
-        for (int i = 0; i < 12; i++) {
-            inMemoryTaskManager.getTask(task.getId());
-            inMemoryTaskManager.getEpic(epic.getId());
-            inMemoryTaskManager.getSubTask(subtask.getId());
-        }
-
-        Assertions.assertEquals(10, inMemoryTaskManager.getHistory().size());
-    }
-
-    @Test
     public void shouldShowRemoveTaskInHistoryTest() {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
@@ -153,13 +139,6 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.getSubTask(subtask.getId());
 
         Assertions.assertEquals(inMemoryTaskManager.getTask(task.getId()), inMemoryTaskManager.getHistory().get(0));
-
-        inMemoryTaskManager.deleteTask(task.getId());
-
-        Assertions.assertNotEquals(inMemoryTaskManager.getTask(task.getId()), inMemoryTaskManager.getHistory().get(0));
-        Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
-        Assertions.assertEquals(epic, inMemoryTaskManager.getHistory().get(1));
-        Assertions.assertEquals(subtask, inMemoryTaskManager.getHistory().get(2));
     }
 
     @Test
@@ -183,6 +162,19 @@ public class InMemoryTaskManagerTest {
         Assertions.assertNotEquals(inMemoryTaskManager.getTask(task.getId()).getDescription(),
                 inMemoryTaskManager.getHistory().get(0).getDescription());
         Assertions.assertNotEquals(task, inMemoryTaskManager.getHistory().get(0));
+    }
+
+    @Test
+    public void shouldRewriteTaskInHistory() {
+        inMemoryTaskManager.createTask(task);
+
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getTask(task.getId());
+
+        int sizeHistory = inMemoryTaskManager.getHistory().size();
+
+        Assertions.assertEquals(1, sizeHistory);
     }
 
 }
