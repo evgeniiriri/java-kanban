@@ -177,4 +177,19 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(1, sizeHistory);
     }
 
+    @Test
+    public void shouldSaveQueueHistory() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+
+        Assertions.assertEquals(subtask, inMemoryTaskManager.getHistory().get(2));
+        Assertions.assertEquals(epic, inMemoryTaskManager.getHistory().get(1));
+        Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
+    }
+
 }
