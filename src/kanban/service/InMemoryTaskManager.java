@@ -175,7 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         for (int subID : epicHashMap.get(id).getSubTasks()) {
             inMemoryHistoryManager.remove(subID);
-            deleteSubTask(subID);
+            subTaskHashMap.remove(subID);
         }
         inMemoryHistoryManager.remove(id);
         epicHashMap.remove(id);

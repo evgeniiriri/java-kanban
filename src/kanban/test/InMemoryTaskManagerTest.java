@@ -138,7 +138,7 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.getEpic(epic.getId());
         inMemoryTaskManager.getSubTask(subtask.getId());
 
-        Assertions.assertEquals(inMemoryTaskManager.getTask(task.getId()), inMemoryTaskManager.getHistory().get(0));
+        Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
     }
 
     @Test

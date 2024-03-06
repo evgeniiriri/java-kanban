@@ -9,10 +9,7 @@ public class LinkedListTasks<E> implements TaskLinkedInterface<E> {
     private Node<E> lastNode;
     private int size = 0;
 
-    public LinkedListTasks() {
-        lastNode = new Node<E>(null, firstNode, null);
-        firstNode = new Node<E>(null, null, lastNode);
-    }
+    public LinkedListTasks() {}
 
     public Node<E> getLastNode() {
         final Node<E> l = lastNode;
@@ -46,17 +43,21 @@ public class LinkedListTasks<E> implements TaskLinkedInterface<E> {
 
     @Override
     public void linkLast(E element) {
-        Node<E> prev = lastNode;
-        prev.setElement(element);
-        lastNode = new Node<E>(null, prev, null);
-        prev.setNextElement(lastNode);
+        Node<E> last = lastNode;
+        Node<E> newLastNode = new Node<>(element, last, null);
+        lastNode = newLastNode;
+        if (last == null) {
+            firstNode = newLastNode;
+        } else {
+            last.setNextElement(newLastNode);
+        }
         size++;
     }
 
     @Override
     public ArrayList<E> getTasks() {
         ArrayList<E> result = new ArrayList<>();
-        Node<E> x = firstNode.getNextElement();
+        Node<E> x = firstNode;
         for (int i = 0; i < size; i++) {
             result.add(x.getElement());
             x = x.getNextElement();

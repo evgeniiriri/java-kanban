@@ -21,12 +21,12 @@ class LinkedListTasksTest {
     }
 
     @Test
-    void getLastNode() {
+    void shouldLastNodeReturnNull() {
         Assertions.assertNull(testLinked.getLastNode().getNextElement());
     }
 
     @Test
-    void removeNode() {
+    void shouldNonEqualsLastNods() {
         Node<Integer> n = testLinked.getLastNode();
         testLinked.removeNode(n);
 
@@ -34,7 +34,7 @@ class LinkedListTasksTest {
     }
 
     @Test
-    void linkLast() {
+    void shouldGetLastElements() {
         int expected = 404;
         testLinked.linkLast(404);
         List<Integer> actually = testLinked.getTasks();
@@ -43,7 +43,7 @@ class LinkedListTasksTest {
     }
 
     @Test
-    void getTasks() {
+    void shouldEqualsValuesTasks() {
         List<Integer> actually = testLinked.getTasks();
         for (int i = 0; i < actually.size(); i++) {
             Assertions.assertEquals(i, actually.get(i));
