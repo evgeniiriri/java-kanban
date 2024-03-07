@@ -3,6 +3,7 @@ import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.Manager;
 import kanban.service.TaskManager;
+import kanban.service.tasklist.LinkedListTasks;
 
 public class Main {
 
@@ -27,10 +28,10 @@ public class Main {
         manager.createTask(testTask2);
         manager.createEpic(testEpic1);
         manager.createEpic(testEpic2);
-        manager.createSubTask(testSubtask1, testEpic1);
-        manager.createSubTask(testSubtask2, testEpic2);
-        manager.createSubTask(testSubtask3, testEpic2);
-        manager.createSubTask(testSubtask4, testEpic2);
+        manager.createSubTask(testSubtask1, testEpic2);
+        manager.createSubTask(testSubtask2, testEpic1);
+        manager.createSubTask(testSubtask3, testEpic1);
+        manager.createSubTask(testSubtask4, testEpic1);
 
         System.out.println("Задачи:");
         for (Task task : manager.getAllTask()) {
@@ -49,10 +50,34 @@ public class Main {
             System.out.println(subtask);
         }
 
+        System.out.println("Делаем вызов задач - " +
+                testTask1.getName() + " и " + testTask2.getName() + " по 2 раза");
+
+        manager.getTask(testTask1.getId());
+        manager.getTask(testTask2.getId());
+        manager.getTask(testTask2.getId());
+        manager.getTask(testTask1.getId());
+
+        printHistory(manager);
+
+        manager.deleteTask(testTask1.getId());
+        System.out.println("Удалаяем задачу - " + testTask1.getName());
+
+        printHistory(manager);
+
+        manager.deleteEpic(testEpic1.getId());
+        System.out.println("Удаляем эпик - " + testEpic1.getName() + System.lineSeparator() +
+        "с подзадачами - " + testEpic1.getSubTasks());
+
+        printHistory(manager);
+    }
+    public static void printHistory(TaskManager manager) {
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
         }
     }
+
+
 
 }

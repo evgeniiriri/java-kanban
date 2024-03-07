@@ -164,6 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!taskHashMap.containsKey(id)) {
             return;
         }
+        inMemoryHistoryManager.remove(id);
         taskHashMap.remove(id);
     }
 
@@ -173,8 +174,10 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         for (int subID : epicHashMap.get(id).getSubTasks()) {
-            deleteSubTask(subID);
+            inMemoryHistoryManager.remove(subID);
+            subTaskHashMap.remove(subID);
         }
+        inMemoryHistoryManager.remove(id);
         epicHashMap.remove(id);
     }
 
@@ -183,6 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subTaskHashMap.containsKey(id)) {
             return;
         }
+        inMemoryHistoryManager.remove(id);
         subTaskHashMap.remove(id);
     }
 
