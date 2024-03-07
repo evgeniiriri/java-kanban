@@ -28,6 +28,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void equalsTasksIdAndObjectTaskTest() {
+        //Сохраняется ли та задача, с ожидаемым ли id.
         inMemoryTaskManager.createTask(task);
         int idTask = 1;
 
@@ -37,6 +38,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void equalsHeirsTasksWithIdAndObjectTest() {
+        //Сохраняются ли эпики и подзадачи, с ожидаемым ли id.
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -52,6 +54,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void attachmentSubtaskToEpicTest() {
+        //Корректна ли привязка подзадачи к эпику.
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
 
@@ -62,6 +65,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void InitManagerTest() {
+        //Тест инициализации менеджера задач.
         TaskManager manager = Manager.getDefault();
 
         Assertions.assertEquals(0, manager.getAllTask().size());
@@ -71,6 +75,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void CreateOperationTest() {
+        //Тест создания задач, эпиков и подзадач.
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -82,6 +87,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void UpdateOperationTest() {
+        //Тест обновления задач, эпиков и подзадач.
         Task newTask = new Task("New task", "New description");
         Epic newEpic = new Epic("New task", "New description");
         Subtask newSubtask = new Subtask("New task", "New description");
@@ -107,6 +113,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void DeleteOperationTest() {
+        //Тест удаления, задач, эпиков и подзадач, к этому эпику привязанных.
         inMemoryTaskManager.deleteTask(task.getId());
         inMemoryTaskManager.deleteEpic(epic.getId());
 
@@ -117,9 +124,12 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldSaveHistoryTaskTest() {
+        //Тест сохранения задач в историю.
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
+
+        Assertions.assertEquals(0, inMemoryTaskManager.getHistory().size());
 
         inMemoryTaskManager.getTask(task.getId());
         inMemoryTaskManager.getEpic(epic.getId());
@@ -129,20 +139,8 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldShowRemoveTaskInHistoryTest() {
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createSubTask(subtask, epic);
-
-        inMemoryTaskManager.getTask(task.getId());
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubTask(subtask.getId());
-
-        Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
-    }
-
-    @Test
     public void shouldIndependenceTasksAndHistory() {
+        //Тест на корректное сохранение задач в истории с их обновление.
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -166,6 +164,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldRewriteTaskInHistory() {
+        //Тест на отсутствие дубликатов в истории.
         inMemoryTaskManager.createTask(task);
 
         inMemoryTaskManager.getTask(task.getId());
@@ -179,6 +178,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldSaveQueueHistory() {
+        //Тест на сохранение очереди добавления записей в историю.
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubTask(subtask, epic);
@@ -190,6 +190,23 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(subtask, inMemoryTaskManager.getHistory().get(2));
         Assertions.assertEquals(epic, inMemoryTaskManager.getHistory().get(1));
         Assertions.assertEquals(task, inMemoryTaskManager.getHistory().get(0));
+    }
+
+    @Test
+    public void shouldReturnEmptyHistoryAfterRemoveTask() {
+        //Тест на удаление задач и удаление их из истории.
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubTask(subtask.getId());
+        Assertions.assertEquals(3, inMemoryTaskManager.getHistory().size());
+
+        inMemoryTaskManager.deleteTask(task.getId());
+        inMemoryTaskManager.deleteEpic(epic.getId());
+        Assertions.assertEquals(0, inMemoryTaskManager.getHistory().size());
     }
 
 }

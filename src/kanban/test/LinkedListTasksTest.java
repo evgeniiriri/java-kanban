@@ -14,6 +14,7 @@ class LinkedListTasksTest {
 
     @BeforeEach
     public void beforeEach() {
+        //Заполняем связанный список значениями.
         testLinked = new LinkedListTasks<>();
         for (int i = 0; i < 15; i++) {
             testLinked.linkLast(i);
@@ -22,11 +23,13 @@ class LinkedListTasksTest {
 
     @Test
     void shouldLastNodeReturnNull() {
+        //Проверяем, что последний элемент ссылается на null.
         Assertions.assertNull(testLinked.getLastNode().getNextElement());
     }
 
     @Test
     void shouldNonEqualsLastNods() {
+        //Тест удаления последней ноды.
         Node<Integer> n = testLinked.getLastNode();
         testLinked.removeNode(n);
 
@@ -35,6 +38,7 @@ class LinkedListTasksTest {
 
     @Test
     void shouldGetLastElements() {
+        //Тест на добавление элемента в конец.
         int expected = 404;
         testLinked.linkLast(404);
         List<Integer> actually = testLinked.getTasks();
@@ -44,6 +48,7 @@ class LinkedListTasksTest {
 
     @Test
     void shouldEqualsValuesTasks() {
+        //Тест на корректное сохранение значения в ноде.
         List<Integer> actually = testLinked.getTasks();
         for (int i = 0; i < actually.size(); i++) {
             Assertions.assertEquals(i, actually.get(i));

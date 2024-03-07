@@ -19,6 +19,8 @@ public class Subtask extends Task implements Cloneable{
 
     @Override
     public Subtask clone() throws CloneNotSupportedException {
+        //Тут мы имеем только примитивные поля, а их, как я понял,
+        //поверхностное клонирование замечательно клонирует.
         return (Subtask) super.clone();
     }
 
