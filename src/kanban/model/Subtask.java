@@ -26,13 +26,7 @@ public class Subtask extends Task implements Cloneable{
 
     @Override
     public String toString() {
-        return "SubTask{" +
-                "idMyEpic=" + epicID +
-                ", status=" + status +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                ", description='" + description + '\'' +
-                '}';
+        return String.format("SUBTASK,%s,%s,%s,%s,%s", id, name, status, description, epicID);
     }
 
     @Override

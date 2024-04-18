@@ -85,11 +85,6 @@ public class Task implements TaskInterface, Cloneable {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "status=" + status +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                ", description='" + description + '\'' +
-                '}';
+        return String.format("TASK,%s,%s,%s,%s", id, name, status, description);
     }
 }

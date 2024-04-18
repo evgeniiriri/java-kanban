@@ -14,7 +14,11 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
 
     @Override
     public String toString() {
-        return super.toString();
+        StringBuilder result = new StringBuilder();
+        for (Task task: linkedListTasks.getTasks()) {
+            result.append(String.valueOf(task.getId())).append(",");
+        }
+        return result.toString();
     }
 
     public void add(T task) {

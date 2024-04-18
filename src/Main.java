@@ -1,17 +1,29 @@
 import kanban.model.Epic;
 import kanban.model.Subtask;
 import kanban.model.Task;
+import kanban.service.FileBackedTaskManager;
 import kanban.service.Manager;
 import kanban.service.TaskManager;
 import kanban.service.tasklist.LinkedListTasks;
+
+import java.io.File;
 
 public class Main {
 
     public static void main(String[] args){
 
         System.out.println("Поехали!");
-        TaskManager manager = Manager.getDefault();
-        printAllTasks(manager);
+//        TaskManager manager = Manager.getDefault();
+//        printAllTasks(manager);
+        File file = new File("storage.txt");
+        FileBackedTaskManager f = new FileBackedTaskManager(file);
+        printAllTasks(f);
+//        File f = new File("storage/storage.txt");
+//        FileBackedTaskManager x = FileBackedTaskManager.loadFromFile(f);
+//        System.out.println(x.getAllEpic());
+
+    }
+    private static void loadManager(TaskManager manager) {
     }
 
     private static void printAllTasks(TaskManager manager){
@@ -57,7 +69,7 @@ public class Main {
         manager.getTask(testTask2.getId());
         manager.getTask(testTask2.getId());
         manager.getTask(testTask1.getId());
-
+//
         printHistory(manager);
 
         manager.deleteTask(testTask1.getId());
