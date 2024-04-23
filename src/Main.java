@@ -4,29 +4,29 @@ import kanban.model.Task;
 import kanban.service.FileBackedTaskManager;
 import kanban.service.Manager;
 import kanban.service.TaskManager;
-import kanban.service.tasklist.LinkedListTasks;
 
 import java.io.File;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         System.out.println("Поехали!");
-//        TaskManager manager = Manager.getDefault();
-//        printAllTasks(manager);
-        File file = new File("storage.txt");
-        FileBackedTaskManager f = new FileBackedTaskManager(file);
-        printAllTasks(f);
-//        File f = new File("storage/storage.txt");
-//        FileBackedTaskManager x = FileBackedTaskManager.loadFromFile(f);
-//        System.out.println(x.getAllEpic());
-
+        File file = new File("storage.csv");
+        //Создаем менеджера.
+        TaskManager manager = Manager.getFileBackedManager(file);
+        //Работаем с задачами.
+        printAllTasks(manager);
+        //Сохраняем результаты работы.
+        manager = FileBackedTaskManager.loadFromFile(file);
+        //Печатаем в консоль сохраненные задачи.
+        System.out.println(manager.getAllTask());
+        System.out.println(manager.getAllEpic());
+        System.out.println(manager.getAllSubTask());
+        System.out.println(manager.getHistory());
     }
-    private static void loadManager(TaskManager manager) {
-    }
 
-    private static void printAllTasks(TaskManager manager){
+    private static void printAllTasks(TaskManager manager) {
         Task testTask1 = new Task("Кот", "Покормить, напоить.");
         Task testTask2 = new Task("Попугай", "Покормить, напоить.");
         Epic testEpic1 = new Epic("Зарядка", "...");
@@ -69,7 +69,7 @@ public class Main {
         manager.getTask(testTask2.getId());
         manager.getTask(testTask2.getId());
         manager.getTask(testTask1.getId());
-//
+
         printHistory(manager);
 
         manager.deleteTask(testTask1.getId());
@@ -79,17 +79,17 @@ public class Main {
 
         manager.deleteEpic(testEpic1.getId());
         System.out.println("Удаляем эпик - " + testEpic1.getName() + System.lineSeparator() +
-        "с подзадачами - " + testEpic1.getSubTasks());
+                "с подзадачами - " + testEpic1.getSubTasks());
 
         printHistory(manager);
     }
+
     public static void printHistory(TaskManager manager) {
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
         }
     }
-
 
 
 }

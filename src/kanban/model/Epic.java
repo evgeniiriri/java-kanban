@@ -1,7 +1,5 @@
 package kanban.model;
 
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -43,7 +41,7 @@ public class Epic extends Task implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("EPIC,%s,%s,%s,%s%s", id, name, status, description, idSubTask);
+        return String.format("EPIC,%s,%s,%s,%s,%s", id, name, status, description, idSubTask);
     }
 
     @Override
