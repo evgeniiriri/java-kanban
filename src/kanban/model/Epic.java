@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task implements Cloneable {
-    private final ArrayList<Integer> idSubTask = new ArrayList<>();
+    private ArrayList<Integer> idSubTask = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
@@ -30,18 +30,18 @@ public class Epic extends Task implements Cloneable {
 
     @Override
     public Epic clone() throws CloneNotSupportedException {
-        return (Epic) super.clone();
+        Epic cloneEpic = (Epic) super.clone();
+        cloneEpic.idSubTask = (ArrayList<Integer>) idSubTask.clone();
+        //Добавил клонирование списка подзадач, но я не понял, как клонировать status.
+        //Но я думаю это и не нужно, так как статус либо высчитывается программой или
+        //устанавливается при создании Task.
+        //Теперь список подзадач защищен от вмешательства 8)
+        return cloneEpic;
     }
 
     @Override
     public String toString() {
-        String subtaskSize = String.valueOf(idSubTask.size());
-        return "Epic{" +
-                "status=" + status +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id + '\'' +
-                ", size='" + subtaskSize + '}';
+        return String.format("EPIC,%s,%s,%s,%s,%s", id, name, status, description, idSubTask);
     }
 
     @Override
