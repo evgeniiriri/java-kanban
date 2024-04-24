@@ -11,10 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+    private static final Logger log = Logger.getLogger(FileBackedTaskManager.class.getName());
     private final Path pathDir;
     private final Path pathTask;
     private final Path pathEpic;
@@ -24,6 +26,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public FileBackedTaskManager(File file) {
         /* Так как у меня в InMemoryTaskManager есть три HashMap для хранения задач,
          * Я решил сделать для каждого типа задачи свое файловое хранилище.*/
+        log.log(Level.INFO, "Инициализация " + FileBackedTaskManager.class.getName());
+
         pathDir = Paths.get("storage");
         pathTask = Paths.get("storage", "TASK" + file);
         pathEpic = Paths.get("storage", "EPIC" + file);
@@ -47,7 +51,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 Path history = Files.createFile(pathHistory);
             }
         } catch (IOException e) {
-            System.out.println("Create directory or file ERROR " + System.lineSeparator() + Arrays.toString(e.getStackTrace()));
+            log.log(Level.SEVERE, "Ошибка создания хранилища." + System.lineSeparator() + e.getMessage());
         }
 
     }
@@ -69,6 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             int idForManager = 0;
             //Загружаем в память задачи, пропуская шапку таблицы.
             String line;
+            log.log(Level.INFO, "Загрузка задач.");
             while ((line = readerTask.readLine()) != null) {
                 if (line.startsWith("type")) {
                     continue;
@@ -102,6 +107,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             //Устанавливаем корректный id.
             fbtm.setIdForManager(idForManager);
             //Загружаем историю.
+            log.log(Level.INFO, "Загрузка истории.");
             if (readerHistory.ready()) {
                 String[] history = readerHistory.readLine().split(",");
                 for (String idHistory : history) {
@@ -120,12 +126,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             }
 
         } catch (IOException e) {
-            System.out.println("Load tasks ERROR");
+            log.log(Level.SEVERE, "Ошибка загрузки задач из хранилища." + System.lineSeparator() + e.getMessage());
         }
         return fbtm;
     }
 
     public void save() throws ManagerSaveException {
+        log.log(Level.INFO, "Сохранение задач.");
         //Создаем врайтеров.
         try (
                 Writer writerTask = new FileWriter(String.valueOf(pathTask), StandardCharsets.UTF_8, false);
@@ -150,7 +157,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 writerSubtask.write(toString(subtask) + System.lineSeparator());
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Write ERROR");
+            log.log(Level.SEVERE, "Неудалось сохранить задачи.");
+            throw new ManagerSaveException("Ошибка сохранения.");
         }
     }
 
@@ -221,7 +229,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю task.");
         }
         return res;
     }
@@ -232,7 +240,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю epic.");
         }
         return res;
     }
@@ -243,7 +251,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю subtask.");
         }
         return res;
     }
@@ -254,7 +262,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("deleted all tasks ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить удаление всех task.");
         }
     }
 
@@ -264,7 +272,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("deleted all epic ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить удаление всех epic.");
         }
     }
 
@@ -274,7 +282,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("deleted all subtask ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING,"Не удалось сохранить удаление всех subtask.");
         }
     }
 
@@ -284,7 +292,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю task.");
         }
         return result;
     }
@@ -295,7 +303,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю epic.");
         }
         return result;
     }
@@ -306,7 +314,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("save history ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить историю subtask.");
         }
         return result;
     }
@@ -317,7 +325,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("create tasks ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить новую task.");
         }
 
     }
@@ -328,7 +336,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("create epic ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить новый epic.");
         }
     }
 
@@ -338,7 +346,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("create subtask ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить новый subtask.");
         }
     }
 
@@ -348,7 +356,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("update task ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить обновление task.");
         }
     }
 
@@ -358,7 +366,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("update epic ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить обновление epic.");
         }
     }
 
@@ -368,7 +376,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("update subtask ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить обновление subtask.");
         }
     }
 
@@ -378,7 +386,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("delete task ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить удаление task.");
         }
     }
 
@@ -388,7 +396,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("delete epic ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить удаление epic.");
         }
     }
 
@@ -398,7 +406,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("delete subtask ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить удаление subtask.");
         }
     }
 
@@ -413,7 +421,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try {
             save();
         } catch (ManagerSaveException e) {
-            System.out.println("set status ERROR" + System.lineSeparator() + e.getMessage());
+            log.log(Level.WARNING, "Не удалось сохранить изменения статуса у задач.");
         }
     }
 }
