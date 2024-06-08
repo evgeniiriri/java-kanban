@@ -141,8 +141,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 Writer writeHistory = new FileWriter(String.valueOf(pathHistory), StandardCharsets.UTF_8, false);
         ) {
             //Пишем шапку таблиц.
-            writerTask.write("type,id,name,status,description" + System.lineSeparator());
-            writerEpic.write("type,id,name,status,description,subtask" + System.lineSeparator());
+            writerTask.write("type,id,name,status,description,start time,duration" + System.lineSeparator());
+            writerEpic.write("type,id,name,status,description,start time,duration,subtask" + System.lineSeparator());
             writerSubtask.write("type,id,name,status,description,epic" + System.lineSeparator());
             writeHistory.write(historyToString(super.inMemoryHistoryManager));
 

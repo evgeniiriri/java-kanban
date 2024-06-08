@@ -1,13 +1,21 @@
 package kanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task implements Cloneable {
     private ArrayList<Integer> idSubTask = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return this.endTime;
     }
 
     public ArrayList<Integer> getSubTasks() {
@@ -26,6 +34,10 @@ public class Epic extends Task implements Cloneable {
         if (idSubTask.contains(id)) {
             idSubTask.remove(id);
         }
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override

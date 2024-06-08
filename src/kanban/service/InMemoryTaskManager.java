@@ -5,6 +5,8 @@ import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,6 +209,62 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
 
     }
+
+    public void setEpicDuration(int epicId) {
+        Epic epic = epicHashMap.get(epicId);
+
+        if (epic.getSubTasks().isEmpty()) {
+            epic.setDuration(Duration.ZERO);
+            return;
+        }
+
+        Duration durationEpic = Duration.ZERO;
+        for (int subtaskId : epic.getSubTasks()) {
+            Subtask subtask = subTaskHashMap.get(subtaskId);
+            durationEpic.plus(subtask.getDuration());
+        }
+        epic.setDuration(durationEpic);
+    }
+
+    public void setEpicStartTime(int epicId) {
+        Epic epic = epicHashMap.get(epicId);
+
+        if (epic.getSubTasks().isEmpty()) {
+            epic.setStartTime(LocalDateTime.now());
+            return;
+        }
+
+        LocalDateTime firstDateTimeSubtask = subTaskHashMap.get(epic.getSubTasks().get(0)).getStartTime();
+        for (int subtaskId : epic.getSubTasks()) {
+            Subtask subtask = subTaskHashMap.get(subtaskId);
+            LocalDateTime nextDateTimeSubtask = subtask.getStartTime();
+            if (firstDateTimeSubtask.isAfter(nextDateTimeSubtask)) {
+                firstDateTimeSubtask = nextDateTimeSubtask;
+            }
+        }
+
+        epic.setStartTime(firstDateTimeSubtask);
+    }
+
+    public void setEpicEndTime(int epicId) {
+        Epic epic = epicHashMap.get(epicId);
+
+        if (epic.getSubTasks().isEmpty()) {
+            epic.setEndTime(LocalDateTime.now());
+            return;
+        }
+
+        LocalDateTime firstDateTimeSubtask = subTaskHashMap.get(epic.getSubTasks().get(0)).getEndTime();
+        for (int subtaskId : epic.getSubTasks()) {
+            Subtask subtask = subTaskHashMap.get(subtaskId);
+            LocalDateTime nextDateTimeSubtask = subtask.getEndTime();
+            if (firstDateTimeSubtask.isAfter(nextDateTimeSubtask)) {
+                firstDateTimeSubtask = nextDateTimeSubtask;
+            }
+        }
+        epic.setEndTime(firstDateTimeSubtask);
+    }
+
     @Override
     public void setStatus(int epicID) {
         Epic epic = epicHashMap.get(epicID);
