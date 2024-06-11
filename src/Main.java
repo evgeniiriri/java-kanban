@@ -6,6 +6,8 @@ import kanban.service.Manager;
 import kanban.service.TaskManager;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -27,14 +29,32 @@ public class Main {
     }
 
     private static void printAllTasks(TaskManager manager) {
+        LocalDateTime forTask = LocalDateTime.of(2024, 06, 11, 12, 30);
+        LocalDateTime forEpic = LocalDateTime.of(2024, 06, 11, 13, 30);
+        LocalDateTime forSubtask = LocalDateTime.of(2024, 06, 11, 14, 30);
+        Duration durationTask = Duration.ofDays(1);
+        Duration durationSubtask = Duration.ofDays(2);
+
         Task testTask1 = new Task("Кот", "Покормить, напоить.");
+        testTask1.setStartTime(forTask);
+        testTask1.setDuration(durationTask);
         Task testTask2 = new Task("Попугай", "Покормить, напоить.");
+        testTask2.setStartTime(forTask);
+        testTask2.setDuration(durationTask);
         Epic testEpic1 = new Epic("Зарядка", "...");
         Epic testEpic2 = new Epic("Покупки", "Список продуктов.");
         Subtask testSubtask1 = new Subtask("Анжумания", "От пола.");
+        testSubtask1.setStartTime(forSubtask);
+        testSubtask1.setDuration(durationSubtask);
         Subtask testSubtask2 = new Subtask("Прец качат", "100 раз");
+        testSubtask2.setStartTime(forSubtask);
+        testSubtask2.setDuration(durationSubtask);
         Subtask testSubtask3 = new Subtask("Бегит", "5 км");
+        testSubtask3.setStartTime(forSubtask);
+        testSubtask3.setDuration(durationSubtask);
         Subtask testSubtask4 = new Subtask("Молоко", "3.2%");
+        testSubtask4.setStartTime(forSubtask);
+        testSubtask4.setDuration(durationSubtask);
 
         manager.createTask(testTask1);
         manager.createTask(testTask2);

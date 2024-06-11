@@ -2,6 +2,7 @@ package kanban.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task implements TaskInterface, Cloneable {
@@ -12,11 +13,24 @@ public class Task implements TaskInterface, Cloneable {
     protected String description;
     protected Duration duration;
     protected LocalDateTime startTime;
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.view = false;
+    }
+
+    public DateTimeFormatter getTaskDateTimeFormatter() {
+        return formatter;
+    }
+
+    protected String getStrDateTime() {
+        return startTime.format(formatter);
+    }
+
+    protected String getStrDurationSecond() {
+        return "PT" + duration.getSeconds() + "S";
     }
 
     public LocalDateTime getEndTime() {
@@ -108,6 +122,7 @@ public class Task implements TaskInterface, Cloneable {
 
     @Override
     public String toString() {
-        return String.format("TASK,%s,%s,%s,%s", id, name, status, description);
+        return String.format("TASK,%s,%s,%s,%s,%s,%s",
+                id, name, status, description, getStrDateTime(), getStrDurationSecond());
     }
 }

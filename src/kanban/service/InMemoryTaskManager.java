@@ -120,6 +120,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
         epic.setStatus(Status.NEW);
         epic.setId(this.id);
+        setEpicStartTime(epic);
+        setEpicEndTime(epic);
+        setEpicDuration(epic);
         epicHashMap.put(this.id, epic);
         this.id++;
     }
@@ -133,6 +136,9 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setStatus(Status.NEW);
         subTask.setId(this.id);
         epic.setSubTasks(subTask.getId());
+        setEpicStartTime(epic);
+        setEpicDuration(epic);
+        setEpicEndTime(epic);
         subTaskHashMap.put(this.id, subTask);
         this.id++;
     }
@@ -154,6 +160,9 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setId(id);
         epicHashMap.put(id, epic);
         setStatus(epic.getId());
+        setEpicStartTime(epic);
+        setEpicDuration(epic);
+        setEpicEndTime(epic);
     }
 
     @Override
@@ -163,7 +172,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subTask.setId(id);
         subTaskHashMap.put(id, subTask);
-        setStatus(epicHashMap.get(subTask.getMyEpicId()).getId());
+        int epicId = epicHashMap.get(subTask.getMyEpicId()).getId();
+        setStatus(epicId);
+        setEpicStartTime(epicId);
+        setEpicDuration(epicId);
+        setEpicEndTime(epicId);
     }
 
     @Override
@@ -210,8 +223,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    public void setEpicDuration(int epicId) {
-        Epic epic = epicHashMap.get(epicId);
+    public void setEpicDuration(Epic epic) {
 
         if (epic.getSubTasks().isEmpty()) {
             epic.setDuration(Duration.ZERO);
@@ -226,11 +238,10 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDuration(durationEpic);
     }
 
-    public void setEpicStartTime(int epicId) {
-        Epic epic = epicHashMap.get(epicId);
+    public void setEpicStartTime(Epic epic) {
 
         if (epic.getSubTasks().isEmpty()) {
-            epic.setStartTime(LocalDateTime.now());
+            epic.setStartTime(LocalDateTime.of(1,1,1,1,1,1));
             return;
         }
 
@@ -246,11 +257,10 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setStartTime(firstDateTimeSubtask);
     }
 
-    public void setEpicEndTime(int epicId) {
-        Epic epic = epicHashMap.get(epicId);
+    public void setEpicEndTime(Epic epic) {
 
         if (epic.getSubTasks().isEmpty()) {
-            epic.setEndTime(LocalDateTime.now());
+            epic.setEndTime(LocalDateTime.of(1,1,1,1,1,1));
             return;
         }
 
