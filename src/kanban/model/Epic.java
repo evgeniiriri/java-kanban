@@ -11,9 +11,6 @@ public class Epic extends Task implements Cloneable {
 
     public Epic(String name, String description) {
         super(name, description);
-        endTime = LocalDateTime.of(1,1,1,1,1,1);
-        super.duration = Duration.ZERO;
-        super.startTime = LocalDateTime.of(1,1,1,1,1,1);
     }
 
     @Override

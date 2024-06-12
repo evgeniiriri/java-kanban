@@ -30,7 +30,7 @@ public class Task implements TaskInterface, Cloneable {
     }
 
     protected String getStrDurationSecond() {
-        return "PT" + duration.getSeconds() + "S";
+        return String.valueOf(duration.toMinutes());
     }
 
     public LocalDateTime getEndTime() {
