@@ -5,11 +5,12 @@ import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.temporal.TemporalUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
@@ -206,7 +207,42 @@ public class InMemoryTaskManager implements TaskManager {
             result.add(subTaskHashMap.get(idSubTask));
         }
         return result;
+    }
 
+    public Duration getDurationForEpic(Epic epic) {
+        int duration = 0;
+        for (int id : epic.getSubTasks()) {
+            duration += subTaskHashMap.get(id).getDuration().toMinutes();
+        }
+        return Duration.ofMinutes(duration);
+    }
+
+    public LocalDateTime getEndTimeForEpic(Epic epic) {
+        Optional<Subtask> subtask = getSubtasks(epic).stream()
+                .max(Comparator.comparing(Subtask::getStartTime));
+        if (subtask.isPresent()) {
+            return subtask.get().getStartTime();
+        } else {
+            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
+        }
+    }
+
+    public LocalDateTime getStartTimeForEpic(Epic epic) {
+        Optional<Subtask> subtask = getSubtasks(epic).stream()
+                .min(Comparator.comparing(Subtask::getStartTime));
+        if (subtask.isPresent()) {
+            return subtask.get().getStartTime();
+        } else {
+            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
+        }
+    }
+
+    private List<Subtask> getSubtasks(Epic epic) {
+        List<Subtask> subtasks = new ArrayList<>();
+        for (int id : epic.getSubTasks()) {
+            subtasks.add(subTaskHashMap.get(id));
+        }
+        return subtasks;
     }
 
     @Override
