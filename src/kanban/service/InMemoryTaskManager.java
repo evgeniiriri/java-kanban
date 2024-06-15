@@ -4,20 +4,29 @@ import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
+import kanban.service.tasklist.Node;
 
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalUnit;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
+    private static final Logger log = Logger.getLogger(InMemoryTaskManager.class.getName());
+
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     protected int id = 1;
     protected final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
+
+    public InMemoryTaskManager() {
+        log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
+    }
 
     protected void setIdForManager(int id) {
         this.id = id;
@@ -68,8 +77,11 @@ public class InMemoryTaskManager implements TaskManager {
         subTaskHashMap.clear();
         for (Epic epic : epicHashMap.values()) {
             for (int i = 0; i < epic.getSubTasks().size(); i++) {
-                epic.deleteSubtaskID(i);
+                epic.deleteSubtask(i);
             }
+            epic.setStartTime(LocalDateTime.of(1,1,1,1,1,1));
+            epic.setDuration(Duration.ZERO);
+            epic.setEndTime(LocalDateTime.now());
             setStatus(epic.getId());
         }
     }
@@ -120,6 +132,15 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setStatus(Status.NEW);
         epic.setId(this.id);
         epicHashMap.put(this.id, epic);
+        if (!epic.getSubTasks().isEmpty()) {
+            try {
+                epic.setStartTime(getStartTimeForEpic(epic));
+                epic.setDuration(getDurationForEpic(epic));
+                epic.setEndTime(getEndTimeForEpic(epic));
+            } catch (DateTimeException e) {
+                log.log(Level.SEVERE, e.getMessage());
+            }
+        }
         this.id++;
     }
 
@@ -133,6 +154,13 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setId(this.id);
         epic.setSubTasks(subTask.getId());
         subTaskHashMap.put(this.id, subTask);
+        try {
+            epic.setStartTime(getStartTimeForEpic(epic));
+            epic.setDuration(getDurationForEpic(epic));
+            epic.setEndTime(getEndTimeForEpic(epic));
+        } catch (DateTimeException e) {
+            log.log(Level.SEVERE, e.getMessage() + "\n" + subTask.getName());
+        }
         this.id++;
     }
 
@@ -160,10 +188,20 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTask == null) {
             return;
         }
+        Subtask subtask = subTaskHashMap.get(id);
+        Epic epic = epicHashMap.get(subTaskHashMap.get(id).getMyEpicId());
+
         subTaskHashMap.put(id, subTask);
-        subTask.setId(id);
-        int epicId = epicHashMap.get(subTask.getMyEpicId()).getId();
-        setStatus(epicId);
+        setStatus(epic.getId());
+
+        if (!subTask.getStartTime().equals(subtask.getStartTime())) {
+            epic.setStartTime(getStartTimeForEpic(epic));
+            epic.setEndTime(getEndTimeForEpic(epic));
+        }
+        if (!subTask.getDuration().equals(subtask.getDuration())) {
+            epic.setDuration(getDurationForEpic(epic));
+            epic.setEndTime(getEndTimeForEpic(epic));
+        }
     }
 
     @Override
@@ -171,7 +209,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (!taskHashMap.containsKey(id)) {
             return;
         }
-        inMemoryHistoryManager.remove(id);
+        if (inMemoryHistoryManager.getHistory().size() > 1) {
+            inMemoryHistoryManager.remove(id);
+        }
         taskHashMap.remove(id);
     }
 
@@ -181,10 +221,14 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         for (int subID : epicHashMap.get(id).getSubTasks()) {
-            inMemoryHistoryManager.remove(subID);
+            if (inMemoryHistoryManager.getHistory().size() > 1) {
+                inMemoryHistoryManager.remove(id);
+            }
             subTaskHashMap.remove(subID);
         }
-        inMemoryHistoryManager.remove(id);
+        if (inMemoryHistoryManager.getHistory().size() > 1) {
+            inMemoryHistoryManager.remove(id);
+        }
         epicHashMap.remove(id);
     }
 
@@ -193,8 +237,26 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subTaskHashMap.containsKey(id)) {
             return;
         }
-        subTaskHashMap.remove(id);
-        inMemoryHistoryManager.remove(id);
+        if (inMemoryHistoryManager.getHistory().size() > 1) {
+            inMemoryHistoryManager.remove(id);
+        }
+        Epic epic = epicHashMap.get(subTaskHashMap.get(id).getMyEpicId());
+        Subtask subtask = subTaskHashMap.get(id);
+        if (epic.getStartTime().equals(subtask.getStartTime())) {
+            subTaskHashMap.remove(id);
+            epic.deleteSubtask(subtask.getId());
+            try {
+                epic.setStartTime(getStartTimeForEpic(epic));
+                epic.setDuration(getDurationForEpic(epic));
+                epic.setEndTime(getEndTimeForEpic(epic));
+            } catch (DateTimeException e) {
+                log.log(Level.SEVERE, e.getMessage());
+            }
+        } else {
+            epic.setDuration(epic.getDuration().minus(subtask.getDuration()));
+            epic.setEndTime(epic.getEndTime().minusMinutes(subtask.getDuration().toMinutes()));
+            subTaskHashMap.remove(id);
+        }
     }
 
     @Override
@@ -212,19 +274,20 @@ public class InMemoryTaskManager implements TaskManager {
     public Duration getDurationForEpic(Epic epic) {
         int duration = 0;
         for (int id : epic.getSubTasks()) {
-            duration += subTaskHashMap.get(id).getDuration().toMinutes();
+            duration += (int) subTaskHashMap.get(id).getDuration().toMinutes();
         }
         return Duration.ofMinutes(duration);
     }
 
     public LocalDateTime getEndTimeForEpic(Epic epic) {
-        Optional<Subtask> subtask = getSubtasks(epic).stream()
-                .max(Comparator.comparing(Subtask::getStartTime));
-        if (subtask.isPresent()) {
-            return subtask.get().getStartTime();
-        } else {
-            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
+        if (epic.getDuration().isZero() || epic.getDuration().isNegative()) {
+            throw new DateTimeException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
         }
+        if (epic.getStartTime() == null) {
+            throw new DateTimeException("Нет возможности высчитать конец задачи, так как начальное время пустое.");
+        }
+        LocalDateTime endTime = epic.getStartTime();
+        return endTime.plus(epic.getDuration());
     }
 
     public LocalDateTime getStartTimeForEpic(Epic epic) {

@@ -7,7 +7,8 @@ import java.util.Objects;
 
 public class Epic extends Task implements Cloneable {
     private ArrayList<Integer> idSubTask = new ArrayList<>();
-    private LocalDateTime endTime;
+    //Инициализируем переменную времени, что б избежать ошибки.
+    private LocalDateTime endTime = LocalDateTime.of(1, 1, 1, 1, 1, 1);
 
     public Epic(String name, String description) {
         super(name, description);
@@ -30,14 +31,14 @@ public class Epic extends Task implements Cloneable {
         this.idSubTask.add(idSubTask);
     }
 
-    public void deleteSubtaskID(int id) {
-        if (idSubTask.contains(id)) {
-            idSubTask.remove(id);
-        }
-    }
-
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public void deleteSubtask(int id) {
+        if (idSubTask.contains(id)) {
+            idSubTask.remove(idSubTask.indexOf(id));
+        }
     }
 
     @Override

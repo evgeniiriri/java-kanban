@@ -11,8 +11,9 @@ public class Task implements TaskInterface, Cloneable {
     protected String name;
     protected int id;
     protected String description;
-    protected Duration duration;
-    protected LocalDateTime startTime;
+
+    protected Duration duration = Duration.ZERO;
+    protected LocalDateTime startTime = LocalDateTime.of(1,1,1,1,1,1);
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Task(String name, String description) {

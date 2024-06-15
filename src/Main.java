@@ -19,128 +19,62 @@ public class Main {
         System.out.println("Поехали!");
 
         LocalDateTime forTask = LocalDateTime.of(2024, 06, 11, 12, 30);
+        LocalDateTime forNewSub = LocalDateTime.of(2024, 06, 11, 9, 30);
         LocalDateTime forEpic = LocalDateTime.of(2024, 06, 11, 13, 30);
         LocalDateTime forSubtask = LocalDateTime.of(2024, 06, 11, 14, 30);
         Duration durationTask = Duration.ofDays(1);
-        Duration durationSubtask = Duration.ofDays(2);
-
-        Subtask testSubtask1 = new Subtask("Анжумания", "От пола.");
-        testSubtask1.setStartTime(forSubtask);
-        testSubtask1.setDuration(durationSubtask);
-        Subtask testSubtask2 = new Subtask("Прец качат", "100 раз");
-        testSubtask2.setStartTime(forEpic);
-        testSubtask2.setDuration(durationSubtask);
-        Subtask testSubtask3 = new Subtask("Получилось", "5 км");
-        testSubtask3.setStartTime(forTask);
-        testSubtask3.setDuration(durationSubtask);
-        Subtask testSubtask4 = new Subtask("Молоко", "3.2%");
-        testSubtask4.setStartTime(forSubtask);
-        testSubtask4.setDuration(durationSubtask);
-
-        DateTimeManager d = new DateTimeManager();
-        Subtask s = d.getMinDateTime(List.of(testSubtask1, testSubtask2, testSubtask3, testSubtask4));
-        System.out.println(s.getName());
-
-//        File file = new File("storage.csv");
-//        //Создаем менеджера.
-//        TaskManager manager = Manager.getFileBackedManager(file);
-//        //Работаем с задачами.
-//        printAllTasks(manager);
-//        //Сохраняем результаты работы.
-//        manager = FileBackedTaskManager.loadFromFile(file);
-//        //Печатаем в консоль сохраненные задачи.
-//        System.out.println(manager.getAllTask());
-//        System.out.println(manager.getAllEpic());
-//        System.out.println(manager.getAllSubTask());
-//        System.out.println(manager.getHistory());
-    }
-
-    private static void printAllTasks(TaskManager manager) {
-        LocalDateTime forTask = LocalDateTime.of(2024, 06, 11, 12, 30);
-        LocalDateTime forEpic = LocalDateTime.of(2024, 06, 11, 13, 30);
-        LocalDateTime forSubtask = LocalDateTime.of(2024, 06, 11, 14, 30);
-        Duration durationTask = Duration.ofDays(1);
+        Duration durationNeSub = Duration.ofDays(12);
         Duration durationSubtask = Duration.ofDays(2);
 
         Task testTask1 = new Task("Кот", "Покормить, напоить.");
-        testTask1.setStartTime(forTask);
         testTask1.setDuration(durationTask);
+        testTask1.setStartTime(forTask);
         Task testTask2 = new Task("Попугай", "Покормить, напоить.");
-        testTask2.setStartTime(forTask);
         testTask2.setDuration(durationTask);
+        testTask2.setStartTime(forTask);
+
         Epic testEpic1 = new Epic("Зарядка", "...");
         Epic testEpic2 = new Epic("Покупки", "Список продуктов.");
 
         Subtask testSubtask1 = new Subtask("Анжумания", "От пола.");
-        testSubtask1.setStartTime(forSubtask);
         testSubtask1.setDuration(durationSubtask);
+        testSubtask1.setStartTime(forSubtask);
         Subtask testSubtask2 = new Subtask("Прец качат", "100 раз");
-        testSubtask2.setStartTime(forEpic);
         testSubtask2.setDuration(durationSubtask);
+        testSubtask2.setStartTime(forTask);
         Subtask testSubtask3 = new Subtask("Получилось", "5 км");
-        testSubtask3.setStartTime(forTask);
         testSubtask3.setDuration(durationSubtask);
-        Subtask testSubtask4 = new Subtask("Молоко", "3.2%");
-        testSubtask4.setStartTime(forSubtask);
-        testSubtask4.setDuration(durationSubtask);
+        testSubtask3.setStartTime(forSubtask);
 
-        manager.createTask(testTask1);
-        manager.createTask(testTask2);
+
+        TaskManager manager = Manager.getDefault();
+
         manager.createEpic(testEpic1);
-        manager.createEpic(testEpic2);
-        manager.createSubTask(testSubtask1, testEpic2);
+        manager.createSubTask(testSubtask1, testEpic1);
         manager.createSubTask(testSubtask2, testEpic1);
-        manager.createSubTask(testSubtask3, testEpic1);
-        manager.createSubTask(testSubtask4, testEpic1);
+        System.out.println(manager.getEpic(testEpic1.getId()).getStartTime());
+        System.out.println(manager.getEpic(testEpic1.getId()).getDuration().toMinutes());
+        System.out.println(manager.getEpic(testEpic1.getId()).getEndTime());
 
-        DateTimeManager d = new DateTimeManager();
-        Subtask s = d.getMinDateTime(List.of(testSubtask1, testSubtask2, testSubtask3, testSubtask4));
-        System.out.println(s.getName());
+        manager.getEpic(testEpic1.getId());
+        manager.getEpic(testSubtask1.getId());
+        manager.getEpic(testEpic1.getId());
 
-//        System.out.println("Задачи:");
-//        for (Task task : manager.getAllTask()) {
-//            System.out.println(task);
-//        }
-//        System.out.println("Эпики:");
-//        for (Task epic : manager.getAllEpic()) {
-//            System.out.println(epic);
-//
-//            for (Task task : manager.getAllSubTask(epic.getId())) {
-//                System.out.println("--> " + task);
-//            }
-//        }
-//        System.out.println("Подзадачи:");
-//        for (Task subtask : manager.getAllSubTask()) {
-//            System.out.println(subtask);
-//        }
-//
-//        System.out.println("Делаем вызов задач - " +
-//                testTask1.getName() + " и " + testTask2.getName() + " по 2 раза");
-//
-//        manager.getTask(testTask1.getId());
-//        manager.getTask(testTask2.getId());
-//        manager.getTask(testTask2.getId());
-//        manager.getTask(testTask1.getId());
-//
-//        printHistory(manager);
-//
-//        manager.deleteTask(testTask1.getId());
-//        System.out.println("Удалаяем задачу - " + testTask1.getName());
-//
-//        printHistory(manager);
-//
-//        manager.deleteEpic(testEpic1.getId());
-//        System.out.println("Удаляем эпик - " + testEpic1.getName() + System.lineSeparator() +
-//                "с подзадачами - " + testEpic1.getSubTasks());
-//
-//        printHistory(manager);
-    }
+        Subtask testSubtask4 = new Subtask("Молоко", "3.2%");
+        testSubtask4.setDuration(durationNeSub);
+        testSubtask4.setStartTime(forNewSub);
+        testSubtask4.setId(testSubtask1.getId());
+        testSubtask4.setStatus(testSubtask1.getStatus());
+        testSubtask4.setMyEpic(testSubtask1.getMyEpicId());
 
-    public static void printHistory(TaskManager manager) {
-        System.out.println("История:");
-        for (Task task : manager.getHistory()) {
-            System.out.println(task);
-        }
+        manager.updateSubTask(testSubtask1.getId(), testSubtask4);
+
+        System.out.println(manager.getEpic(testEpic1.getId()).getStartTime());
+        System.out.println(manager.getEpic(testEpic1.getId()).getDuration().toMinutes());
+        System.out.println(manager.getEpic(testEpic1.getId()).getEndTime());
+
+        System.out.println(manager.getHistory());
+
     }
 
 

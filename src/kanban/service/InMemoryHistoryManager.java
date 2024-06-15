@@ -11,6 +11,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
 
     private final LinkedListTasks<T> linkedListTasks = new LinkedListTasks<>();
     private final HashMap<Integer, Node<T>> linkedTasksMap = new HashMap<>();
+    private List<T> history;
 
     @Override
     public String toString() {
@@ -39,11 +40,12 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         }
         linkedListTasks.linkLast((T) clon);
         linkedTasksMap.put(clon.getId(), linkedListTasks.getLastNode());
+        history = List.copyOf(linkedListTasks.getTasks());
     }
 
     @Override
     public List<T> getHistory() {
-        return List.copyOf(linkedListTasks.getTasks());
+        return history;
     }
 
     @Override
