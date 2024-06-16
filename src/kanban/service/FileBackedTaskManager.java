@@ -143,9 +143,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 Writer writeHistory = new FileWriter(String.valueOf(pathHistory), StandardCharsets.UTF_8, false);
         ) {
             //Пишем шапку таблиц.
-            writerTask.write("type,id,name,status,description,start time,duration" + System.lineSeparator());
-            writerEpic.write("type,id,name,status,description,start time,duration,my subtasks" + System.lineSeparator());
-            writerSubtask.write("type,id,name,status,description,start time,duration,my epic" + System.lineSeparator());
+            writerTask.write("type;id;name;status;description;start time;duration" + System.lineSeparator());
+            writerEpic.write("type;id;name;status;description;start time;duration;my subtasks" + System.lineSeparator());
+            writerSubtask.write("type;id;name;status;description;start time;duration;my epic" + System.lineSeparator());
             writeHistory.write(historyToString(super.inMemoryHistoryManager));
 
             //Заполняем хранилище.
@@ -175,7 +175,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public Task fromString(String value) {
         //Разделяем строку из файла и возвращаем нужный тип задачи, полностью готовый к работе.
         if (!value.isEmpty()) {
-            String[] splitValue = value.split(",");
+            String[] splitValue = value.split(";");
             String type = splitValue[0];
             String name = splitValue[2];
             String description = splitValue[4];
@@ -183,19 +183,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 Task task = new Task(name, description);
                 task.setId(Integer.parseInt(splitValue[1]));
                 task.setStatus(getStatus(splitValue[3]));
-                task.setStartTime(LocalDateTime.parse(splitValue[6], task.getTaskDateTimeFormatter()));
-                task.setDuration(Duration.parse(splitValue[7]));
+                task.setStartTime(LocalDateTime.parse(splitValue[5], task.getTaskDateTimeFormatter()));
+                task.setDuration(Duration.parse("PT" + splitValue[6] + "M"));
                 return task;
             } else if (type.equals("EPIC")) {
                 Epic epic = new Epic(name, description);
                 epic.setId(Integer.parseInt(splitValue[1]));
                 epic.setStatus(getStatus(splitValue[3]));
                 epic.setStartTime(LocalDateTime.parse(splitValue[5], epic.getTaskDateTimeFormatter()));
-                epic.setDuration(Duration.parse(splitValue[6]));
+                epic.setDuration(Duration.parse("PT" + splitValue[6] + "M"));
                 //Загружаем все Subtask данного Epic.
                 String[] idSubtasks = splitValue[7].substring(1, splitValue[7].length() - 1).split(",");
                 for (String idSubtask : idSubtasks) {
-                    epic.setSubTasks(Integer.parseInt(idSubtask));
+                    try {
+                        epic.setSubTasks(Integer.parseInt(idSubtask.trim()));
+                    } catch (NumberFormatException e) {
+                        log.log(Level.INFO, "У " + epic.getClass() +" нет подзадач." );
+                        break;
+                    }
                 }
                 return epic;
             } else if (type.equals("SUBTASK")) {
@@ -205,7 +210,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 subtask.setId(Integer.parseInt(splitValue[1]));
                 subtask.setStatus(getStatus(splitValue[3]));
                 subtask.setStartTime(LocalDateTime.parse(splitValue[5], subtask.getTaskDateTimeFormatter()));
-                subtask.setDuration(Duration.parse(splitValue[6]));
+                subtask.setDuration(Duration.parse("PT" + splitValue[6] + "M"));
                 subtask.setMyEpic(epicId);
                 return subtask;
             }

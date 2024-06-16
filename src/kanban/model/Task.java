@@ -30,7 +30,7 @@ public class Task implements TaskInterface, Cloneable {
         return startTime.format(formatter);
     }
 
-    protected String getStrDurationSecond() {
+    protected String getStrDurationMinutes() {
         return String.valueOf(duration.toMinutes());
     }
 
@@ -123,7 +123,7 @@ public class Task implements TaskInterface, Cloneable {
 
     @Override
     public String toString() {
-        return String.format("TASK,%s,%s,%s,%s,%s,%s",
-                id, name, status, description, getStrDateTime(), getStrDurationSecond());
+        return String.format("TASK;%s;%s;%s;%s;%s;%s",
+                id, name, status, description, getStrDateTime(), getStrDurationMinutes());
     }
 }

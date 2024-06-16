@@ -1,6 +1,5 @@
 package kanban.model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -54,8 +53,8 @@ public class Epic extends Task implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("EPIC,%s,%s,%s,%s,%s,%s,%s",
-                id, name, status, description, getStrDateTime(), getStrDurationSecond(), idSubTask);
+        return String.format("EPIC;%s;%s;%s;%s;%s;%s;%s",
+                id, name, status, description, getStrDateTime(), getStrDurationMinutes(), idSubTask);
     }
 
     @Override
