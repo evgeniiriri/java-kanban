@@ -23,6 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     protected int id = 1;
     protected final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
+    protected TreeSet<Task> sortedPrioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     public InMemoryTaskManager() {
         log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
@@ -31,6 +32,45 @@ public class InMemoryTaskManager implements TaskManager {
     protected void setIdForManager(int id) {
         this.id = id;
     }
+
+    public TreeSet<Task> getPrioritizedTasks() {
+        if (sortedPrioritizedTasks.isEmpty()) {
+            for (Task task : taskHashMap.values()) {
+                if (task.getStartTime().equals(LocalDateTime.of(1,1,1,1,1,1))
+                || task.getStartTime() == null)
+                {
+                    continue;
+                }
+                sortedPrioritizedTasks.add(task);
+            }
+            for (Subtask subtask : subTaskHashMap.values()) {
+                if (subtask.getStartTime().equals(LocalDateTime.of(1,1,1,1,1,1))
+                        || subtask.getStartTime() == null)
+                {
+                    continue;
+                }
+                sortedPrioritizedTasks.add(subtask);
+            }
+        }
+        return sortedPrioritizedTasks;
+    }
+
+    public void add(Task task) {
+        boolean isAdding = sortedPrioritizedTasks.stream()
+                .anyMatch(task1 -> !validationTime(task, task1));
+        System.out.println(isAdding);
+    }
+
+    public boolean validationTime(Task taskFirst, Task taskSecond) {
+        if (taskFirst.getEndTime().isAfter(taskSecond.getStartTime())
+                || taskFirst.getEndTime().equals(taskSecond.getStartTime())) {
+            return true;
+        }
+        return false;
+    }
+
+
+
 
     @Override
     public List<Task> getHistory() {
@@ -79,7 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
             for (int i = 0; i < epic.getSubTasks().size(); i++) {
                 epic.deleteSubtask(i);
             }
-            epic.setStartTime(LocalDateTime.of(1,1,1,1,1,1));
+            epic.setStartTime(LocalDateTime.of(1, 1, 1, 1, 1, 1));
             epic.setDuration(Duration.ZERO);
             epic.setEndTime(LocalDateTime.now());
             setStatus(epic.getId());
