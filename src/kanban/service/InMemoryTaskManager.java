@@ -23,7 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     protected int id = 1;
     protected final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
-    protected TreeSet<Task> sortedPrioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    protected TreeSet<Task> sortedPrioritizedTasks;
 
     public InMemoryTaskManager() {
         log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
@@ -33,24 +33,70 @@ public class InMemoryTaskManager implements TaskManager {
         this.id = id;
     }
 
+    @Override
+    public ArrayList<Subtask> getAllSubTask(int id) {
+        if (!epicHashMap.containsKey(id)) {
+            return null;
+        }
+        ArrayList<Subtask> result = new ArrayList<>();
+        for (int idSubTask : epicHashMap.get(id).getSubTasks()) {
+            result.add(subTaskHashMap.get(idSubTask));
+        }
+        return result;
+    }
+
+    public LocalDateTime getEndTimeForEpic(Epic epic) {
+        if (epic.getDuration().isZero() || epic.getDuration().isNegative()) {
+            log.log(Level.SEVERE, "Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
+            throw new DateTimeException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
+        }
+        if (epic.getStartTime() == null) {
+            log.log(Level.SEVERE, "Нет возможности высчитать конец задачи, так как начальное время пустое.");
+            throw new DateTimeException("Нет возможности высчитать конец задачи, так как начальное время пустое.");
+        }
+        LocalDateTime endTime = epic.getStartTime();
+        return endTime.plus(epic.getDuration());
+    }
+
+    public LocalDateTime getStartTimeForEpic(Epic epic) {
+        Optional<Subtask> subtask = getSubtasks(epic).stream()
+                .min(Comparator.comparing(Subtask::getStartTime));
+        if (subtask.isPresent()) {
+            return subtask.get().getStartTime();
+        } else {
+            log.log(Level.SEVERE, "Не удалось посчитать startTime для " + epic.getClass());
+            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
+        }
+    }
+
+    private List<Subtask> getSubtasks(Epic epic) {
+        List<Subtask> subtasks = new ArrayList<>();
+        for (int id : epic.getSubTasks()) {
+            subtasks.add(subTaskHashMap.get(id));
+        }
+        return subtasks;
+    }
+
+    public Duration getDurationForEpic(Epic epic) {
+        int duration = 0;
+        for (int id : epic.getSubTasks()) {
+            duration += (int) subTaskHashMap.get(id).getDuration().toMinutes();
+        }
+        return Duration.ofMinutes(duration);
+    }
+
     public TreeSet<Task> getPrioritizedTasks() {
-        if (sortedPrioritizedTasks.isEmpty()) {
-            for (Task task : taskHashMap.values()) {
-                if (task.getStartTime().equals(LocalDateTime.of(1,1,1,1,1,1))
-                || task.getStartTime() == null)
-                {
-                    continue;
-                }
-                sortedPrioritizedTasks.add(task);
-            }
-            for (Subtask subtask : subTaskHashMap.values()) {
-                if (subtask.getStartTime().equals(LocalDateTime.of(1,1,1,1,1,1))
-                        || subtask.getStartTime() == null)
-                {
-                    continue;
-                }
-                sortedPrioritizedTasks.add(subtask);
-            }
+        if (sortedPrioritizedTasks == null || sortedPrioritizedTasks.isEmpty()) {
+            sortedPrioritizedTasks = taskHashMap.values().stream()
+                    .filter(task -> task.getStartTime() != null && task.getDuration() != null)
+                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Task::getStartTime))));
+            //Заполняем Task.
+            sortedPrioritizedTasks.addAll(
+                    subTaskHashMap.values().stream()
+                            .filter(subtask -> subtask.getStartTime() != null && subtask.getDuration() != null)
+                            .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Subtask::getStartTime))))
+            );
+            //Добавляем Subtasks.
         }
         return sortedPrioritizedTasks;
     }
@@ -58,7 +104,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void add(Task task) {
         boolean isAdding = sortedPrioritizedTasks.stream()
                 .anyMatch(task1 -> !validationTime(task, task1));
-        System.out.println(isAdding);
     }
 
     public boolean validationTime(Task taskFirst, Task taskSecond) {
@@ -68,8 +113,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
-
-
 
 
     @Override
@@ -158,6 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskHashMap.containsValue(task)) {
             return;
         }
+        if (add(task))
         task.setStatus(Status.NEW);
         task.setId(this.id);
         taskHashMap.put(this.id, task);
@@ -297,55 +341,6 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setEndTime(epic.getEndTime().minusMinutes(subtask.getDuration().toMinutes()));
             subTaskHashMap.remove(id);
         }
-    }
-
-    @Override
-    public ArrayList<Subtask> getAllSubTask(int id) {
-        if (!epicHashMap.containsKey(id)) {
-            return null;
-        }
-        ArrayList<Subtask> result = new ArrayList<>();
-        for (int idSubTask : epicHashMap.get(id).getSubTasks()) {
-            result.add(subTaskHashMap.get(idSubTask));
-        }
-        return result;
-    }
-
-    public Duration getDurationForEpic(Epic epic) {
-        int duration = 0;
-        for (int id : epic.getSubTasks()) {
-            duration += (int) subTaskHashMap.get(id).getDuration().toMinutes();
-        }
-        return Duration.ofMinutes(duration);
-    }
-
-    public LocalDateTime getEndTimeForEpic(Epic epic) {
-        if (epic.getDuration().isZero() || epic.getDuration().isNegative()) {
-            throw new DateTimeException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
-        }
-        if (epic.getStartTime() == null) {
-            throw new DateTimeException("Нет возможности высчитать конец задачи, так как начальное время пустое.");
-        }
-        LocalDateTime endTime = epic.getStartTime();
-        return endTime.plus(epic.getDuration());
-    }
-
-    public LocalDateTime getStartTimeForEpic(Epic epic) {
-        Optional<Subtask> subtask = getSubtasks(epic).stream()
-                .min(Comparator.comparing(Subtask::getStartTime));
-        if (subtask.isPresent()) {
-            return subtask.get().getStartTime();
-        } else {
-            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
-        }
-    }
-
-    private List<Subtask> getSubtasks(Epic epic) {
-        List<Subtask> subtasks = new ArrayList<>();
-        for (int id : epic.getSubTasks()) {
-            subtasks.add(subTaskHashMap.get(id));
-        }
-        return subtasks;
     }
 
     @Override

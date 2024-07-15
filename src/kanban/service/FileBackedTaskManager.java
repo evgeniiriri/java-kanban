@@ -159,7 +159,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 writerSubtask.write(toString(subtask) + System.lineSeparator());
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, "Неудалось сохранить задачи.");
+            log.log(Level.SEVERE, "Не удалось сохранить задачи.");
             throw new ManagerSaveException("Ошибка сохранения.");
         }
     }

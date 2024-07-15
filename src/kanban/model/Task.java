@@ -12,8 +12,8 @@ public class Task implements TaskInterface, Cloneable {
     protected int id;
     protected String description;
 
-    protected Duration duration = Duration.ZERO;
-    protected LocalDateTime startTime = LocalDateTime.of(1,1,1,1,1,1);
+    protected Duration duration;
+    protected LocalDateTime startTime;
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Task(String name, String description) {
@@ -27,14 +27,23 @@ public class Task implements TaskInterface, Cloneable {
     }
 
     protected String getStrDateTime() {
+        if (startTime == null) {
+            return "null";
+        }
         return startTime.format(formatter);
     }
 
     protected String getStrDurationMinutes() {
+        if (duration == null) {
+            return "null";
+        }
         return String.valueOf(duration.toMinutes());
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return LocalDateTime.MAX;
+        }
         return startTime.plus(duration);
     }
 
