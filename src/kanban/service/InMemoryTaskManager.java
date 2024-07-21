@@ -4,6 +4,8 @@ import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
+import kanban.service.taskexception.DateTimeTaskManagerException;
+import kanban.service.taskexception.TaskManagerBaseException;
 import kanban.service.tasklist.Node;
 
 import java.time.DateTimeException;
@@ -21,9 +23,9 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
-    protected int id = 1;
     protected final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
     protected TreeSet<Task> sortedPrioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    protected int id = 1;
 
     public InMemoryTaskManager() {
         log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
@@ -45,27 +47,27 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    public LocalDateTime getEndTimeForEpic(Epic epic) {
+    public LocalDateTime getEndTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
         if (epic.getDuration().isZero() || epic.getDuration().isNegative()) {
             log.log(Level.SEVERE, "Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
-            throw new DateTimeException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
+            throw new DateTimeTaskManagerException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
         }
         if (epic.getStartTime() == null) {
             log.log(Level.SEVERE, "Нет возможности высчитать конец задачи, так как начальное время пустое.");
-            throw new DateTimeException("Нет возможности высчитать конец задачи, так как начальное время пустое.");
+            throw new DateTimeTaskManagerException("Нет возможности высчитать конец задачи, так как начальное время пустое.");
         }
         LocalDateTime endTime = epic.getStartTime();
         return endTime.plus(epic.getDuration());
     }
 
-    public LocalDateTime getStartTimeForEpic(Epic epic) {
+    public LocalDateTime getStartTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
         Optional<Subtask> subtask = getSubtasks(epic).stream()
                 .min(Comparator.comparing(Subtask::getStartTime));
         if (subtask.isPresent()) {
             return subtask.get().getStartTime();
         } else {
             log.log(Level.SEVERE, "Не удалось посчитать startTime для " + epic.getClass());
-            throw new DateTimeException("Не удалось посчитать startTime для " + epic.getClass());
+            throw new DateTimeTaskManagerException("Не удалось посчитать startTime для " + epic.getClass());
         }
     }
 
@@ -85,52 +87,27 @@ public class InMemoryTaskManager implements TaskManager {
         return Duration.ofMinutes(duration);
     }
 
-    public TreeSet<Task> getPrioritizedTasks() {
-//        if (sortedPrioritizedTasks == null || sortedPrioritizedTasks.isEmpty()) {
-//            sortedPrioritizedTasks = taskHashMap.values().stream()
-//                    .filter(task -> task.getStartTime() != null && task.getDuration() != null)
-//                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Task::getStartTime))));
-//            //Заполняем Task.
-//            sortedPrioritizedTasks.addAll(
-//                    subTaskHashMap.values().stream()
-//                            .filter(subtask -> subtask.getStartTime() != null && subtask.getDuration() != null)
-//                            .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Subtask::getStartTime))))
-//            );
-//            //Добавляем Subtasks.
-//        }
-
+    public TreeSet<Task> getPrioritizedTasks() throws DateTimeTaskManagerException {
+        if (sortedPrioritizedTasks == null) {
+            throw new DateTimeTaskManagerException("Список приоритизированных задач пуст.");
+        }
         return sortedPrioritizedTasks;
     }
 
-    public void add(Task task) {
+    public void add(Task task) throws DateTimeTaskManagerException {
         boolean havFreeTimeForTask = sortedPrioritizedTasks.stream().noneMatch(task1 -> validationTime(task, task1));
 
         if (havFreeTimeForTask) {
             sortedPrioritizedTasks.add(task);
         } else {
-            throw new DateTimeException("В это время выполняется другая задача.");
+            throw new DateTimeTaskManagerException("В это время выполняется другая задача.");
         }
 
     }
 
     public boolean validationTime(Task taskAdded, Task taskSecond) {
-        System.out.println(sortedPrioritizedTasks);
-        LocalDateTime t1 = taskAdded.getEndTime();
-        LocalDateTime t2 = taskSecond.getStartTime();
-        System.out.println(t1 + " " + taskAdded);
-        System.out.println(t2 + " " + taskSecond);
-        System.out.println(" ");
-        if (sortedPrioritizedTasks.isEmpty()) {
-            return false;
-        } else if (taskAdded.getEndTime().isBefore(taskSecond.getStartTime())
-                || taskAdded.getEndTime().equals(taskSecond.getStartTime())) {
-            return true; //Пересечение начала задачи.
-        } else if (taskSecond.getStartTime().isAfter(taskAdded.getEndTime())
-                || taskSecond.getStartTime().equals(taskAdded.getEndTime())) {
-            return true; //Пересечение конца задачи.
-        } else {
-            return false;
-        }
+        return taskAdded.getStartTime().isBefore(taskSecond.getEndTime())
+                && taskAdded.getEndTime().isAfter(taskSecond.getStartTime());
     }
 
 
@@ -227,7 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         try {
             add(task);
-        } catch (DateTimeException e) {
+        } catch (TaskManagerBaseException e) {
             log.log(Level.INFO, e.getMessage() + System.lineSeparator() + task);
         }
     }
@@ -245,7 +222,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStartTime(getStartTimeForEpic(epic));
                 epic.setDuration(getDurationForEpic(epic));
                 epic.setEndTime(getEndTimeForEpic(epic));
-            } catch (DateTimeException e) {
+            } catch (TaskManagerBaseException e) {
                 log.log(Level.SEVERE, e.getMessage());
             }
         }
@@ -266,14 +243,9 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStartTime(getStartTimeForEpic(epic));
             epic.setDuration(getDurationForEpic(epic));
             epic.setEndTime(getEndTimeForEpic(epic));
-        } catch (DateTimeException e) {
-            log.log(Level.SEVERE, e.getMessage() + "\n" + subTask.getName());
-        }
-        this.id++;
-
-        try {
+            this.id++;
             add(subTask);
-        } catch (DateTimeException e) {
+        } catch (TaskManagerBaseException e) {
             log.log(Level.INFO, e.getMessage() + System.lineSeparator() + subTask);
         }
     }
@@ -307,14 +279,17 @@ public class InMemoryTaskManager implements TaskManager {
 
         subTaskHashMap.put(id, subTask);
         setStatus(epic.getId());
-
-        if (!subTask.getStartTime().equals(subtask.getStartTime())) {
-            epic.setStartTime(getStartTimeForEpic(epic));
-            epic.setEndTime(getEndTimeForEpic(epic));
-        }
-        if (!subTask.getDuration().equals(subtask.getDuration())) {
-            epic.setDuration(getDurationForEpic(epic));
-            epic.setEndTime(getEndTimeForEpic(epic));
+        try {
+            if (!subTask.getStartTime().equals(subtask.getStartTime())) {
+                epic.setStartTime(getStartTimeForEpic(epic));
+                epic.setEndTime(getEndTimeForEpic(epic));
+            }
+            if (!subTask.getDuration().equals(subtask.getDuration())) {
+                epic.setDuration(getDurationForEpic(epic));
+                epic.setEndTime(getEndTimeForEpic(epic));
+            }
+        } catch (TaskManagerBaseException e) {
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -363,7 +338,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStartTime(getStartTimeForEpic(epic));
                 epic.setDuration(getDurationForEpic(epic));
                 epic.setEndTime(getEndTimeForEpic(epic));
-            } catch (DateTimeException e) {
+            } catch (TaskManagerBaseException e) {
                 log.log(Level.SEVERE, e.getMessage());
             }
         } else {

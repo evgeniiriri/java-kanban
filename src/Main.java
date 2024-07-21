@@ -2,6 +2,7 @@ import kanban.model.Epic;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.*;
+import kanban.service.taskexception.TaskManagerBaseException;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -12,16 +13,16 @@ public class Main {
 
     public static void main(String[] args) {
         Task task1 = new Task("15.07.2024", "1hours duration");
-        task1.setStartTime(LocalDateTime.of(2024, 7, 11, 10, 30));
-        task1.setDuration(Duration.ofMinutes(66));
+        task1.setStartTime(LocalDateTime.of(2024, 7, 11, 10, 00));
+        task1.setDuration(Duration.ofMinutes(60));
 
         Task task2 = new Task("15.07.2024", "2hours duration");
-        task2.setStartTime(LocalDateTime.of(2024, 7, 11, 10, 00));
-        task2.setDuration(Duration.ofMinutes(120));
+        task2.setStartTime(LocalDateTime.of(2024, 7, 11, 11, 30));
+        task2.setDuration(Duration.ofMinutes(30));
 
         Task task3 = new Task("15.07.2024", "3hours duration");
-        task3.setStartTime(LocalDateTime.of(2024, 7, 11, 14, 00));
-        task3.setDuration(Duration.ofMinutes(180));
+        task3.setStartTime(LocalDateTime.of(2024, 7, 11, 11, 35));
+        task3.setDuration(Duration.ofMinutes(10));
 
         Subtask subtask1 = new Subtask("15.08.2024", "1hours duration");
         subtask1.setStartTime(LocalDateTime.of(2024, 6, 15, 11, 00));
@@ -40,8 +41,11 @@ public class Main {
         fileBackedTaskManager.createTask(task1);
         fileBackedTaskManager.createTask(task2);
         fileBackedTaskManager.createTask(task3);
-        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
-
+        try {
+            System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+        } catch (TaskManagerBaseException e) {
+            System.out.println("sss");
+        }
     }
 
 }
