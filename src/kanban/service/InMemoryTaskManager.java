@@ -23,7 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
     protected int id = 1;
     protected final InMemoryHistoryManager<Task> inMemoryHistoryManager = new InMemoryHistoryManager<>();
-    protected TreeSet<Task> sortedPrioritizedTasks;
+    protected TreeSet<Task> sortedPrioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     public InMemoryTaskManager() {
         log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
@@ -86,32 +86,51 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public TreeSet<Task> getPrioritizedTasks() {
-        if (sortedPrioritizedTasks == null || sortedPrioritizedTasks.isEmpty()) {
-            sortedPrioritizedTasks = taskHashMap.values().stream()
-                    .filter(task -> task.getStartTime() != null && task.getDuration() != null)
-                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Task::getStartTime))));
-            //Заполняем Task.
-            sortedPrioritizedTasks.addAll(
-                    subTaskHashMap.values().stream()
-                            .filter(subtask -> subtask.getStartTime() != null && subtask.getDuration() != null)
-                            .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Subtask::getStartTime))))
-            );
-            //Добавляем Subtasks.
-        }
+//        if (sortedPrioritizedTasks == null || sortedPrioritizedTasks.isEmpty()) {
+//            sortedPrioritizedTasks = taskHashMap.values().stream()
+//                    .filter(task -> task.getStartTime() != null && task.getDuration() != null)
+//                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Task::getStartTime))));
+//            //Заполняем Task.
+//            sortedPrioritizedTasks.addAll(
+//                    subTaskHashMap.values().stream()
+//                            .filter(subtask -> subtask.getStartTime() != null && subtask.getDuration() != null)
+//                            .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Subtask::getStartTime))))
+//            );
+//            //Добавляем Subtasks.
+//        }
+
         return sortedPrioritizedTasks;
     }
 
     public void add(Task task) {
-        boolean isAdding = sortedPrioritizedTasks.stream()
-                .anyMatch(task1 -> !validationTime(task, task1));
+        boolean havFreeTimeForTask = sortedPrioritizedTasks.stream().noneMatch(task1 -> validationTime(task, task1));
+
+        if (havFreeTimeForTask) {
+            sortedPrioritizedTasks.add(task);
+        } else {
+            throw new DateTimeException("В это время выполняется другая задача.");
+        }
+
     }
 
-    public boolean validationTime(Task taskFirst, Task taskSecond) {
-        if (taskFirst.getEndTime().isAfter(taskSecond.getStartTime())
-                || taskFirst.getEndTime().equals(taskSecond.getStartTime())) {
-            return true;
+    public boolean validationTime(Task taskAdded, Task taskSecond) {
+        System.out.println(sortedPrioritizedTasks);
+        LocalDateTime t1 = taskAdded.getEndTime();
+        LocalDateTime t2 = taskSecond.getStartTime();
+        System.out.println(t1 + " " + taskAdded);
+        System.out.println(t2 + " " + taskSecond);
+        System.out.println(" ");
+        if (sortedPrioritizedTasks.isEmpty()) {
+            return false;
+        } else if (taskAdded.getEndTime().isBefore(taskSecond.getStartTime())
+                || taskAdded.getEndTime().equals(taskSecond.getStartTime())) {
+            return true; //Пересечение начала задачи.
+        } else if (taskSecond.getStartTime().isAfter(taskAdded.getEndTime())
+                || taskSecond.getStartTime().equals(taskAdded.getEndTime())) {
+            return true; //Пересечение конца задачи.
+        } else {
+            return false;
         }
-        return false;
     }
 
 
@@ -201,11 +220,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskHashMap.containsValue(task)) {
             return;
         }
-        if (add(task))
         task.setStatus(Status.NEW);
         task.setId(this.id);
         taskHashMap.put(this.id, task);
         this.id++;
+
+        try {
+            add(task);
+        } catch (DateTimeException e) {
+            log.log(Level.INFO, e.getMessage() + System.lineSeparator() + task);
+        }
     }
 
     @Override
@@ -246,6 +270,12 @@ public class InMemoryTaskManager implements TaskManager {
             log.log(Level.SEVERE, e.getMessage() + "\n" + subTask.getName());
         }
         this.id++;
+
+        try {
+            add(subTask);
+        } catch (DateTimeException e) {
+            log.log(Level.INFO, e.getMessage() + System.lineSeparator() + subTask);
+        }
     }
 
     @Override

@@ -334,8 +334,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public void createTask(Task task) {
-        super.createTask(task);
         try {
+            super.createTask(task);
             save();
         } catch (ManagerSaveException e) {
             log.log(Level.WARNING, "Не удалось сохранить новую task.");
