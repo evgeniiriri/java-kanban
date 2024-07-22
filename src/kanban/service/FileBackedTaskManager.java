@@ -425,7 +425,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubTask(int id) {
+    public List<Subtask> getAllSubTask(int id) {
         return super.getAllSubTask(id);
     }
 

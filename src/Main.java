@@ -1,4 +1,5 @@
 import kanban.model.Epic;
+import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.*;
@@ -36,11 +37,45 @@ public class Main {
 
         File file = new File("storage.csv");
 
-        InMemoryTaskManager fileBackedTaskManager = new InMemoryTaskManager();
+        FileBackedTaskManager fileBackedTaskManager = Manager.getFileBackedManager(file);
 
         fileBackedTaskManager.createTask(task1);
         fileBackedTaskManager.createTask(task2);
         fileBackedTaskManager.createTask(task3);
+        fileBackedTaskManager.createEpic(epic);
+        fileBackedTaskManager.createSubTask(subtask1, epic);
+        fileBackedTaskManager.createSubTask(subtask2, epic);
+
+        printMenu(fileBackedTaskManager, epic);
+
+        Task taskNew = new Task("Task New", "new new new");
+        taskNew.setStartTime(LocalDateTime.of(2024, 7, 7, 10, 00));
+        taskNew.setDuration(Duration.ofMinutes(60));
+        taskNew.setStatus(Status.IN_PROGRESS);
+        taskNew.setId(task1.getId());
+
+        Subtask subtaskNew = new Subtask("Sub new", "new new new");
+        subtaskNew.setStartTime(LocalDateTime.of(2024, 7, 6, 10, 00));
+        subtaskNew.setDuration(Duration.ofMinutes(120));
+        subtaskNew.setStatus(Status.IN_PROGRESS);
+        subtaskNew.setId(subtask1.getId());
+
+        fileBackedTaskManager.updateTask(task1.getId(), taskNew);
+        fileBackedTaskManager.updateSubTask(subtask1.getId(), subtaskNew);
+
+        printMenu(fileBackedTaskManager, epic);
+
+    }
+
+    public static void printMenu(FileBackedTaskManager fileBackedTaskManager, Epic epic) {
+        System.out.println(fileBackedTaskManager.getAllTask());
+        System.out.println(fileBackedTaskManager.getAllSubTask(epic.getId()));
+        System.out.println(fileBackedTaskManager.getEpic(epic.getId()));
+        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getStartTime());
+        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getEndTime());
+        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getDuration());
+
+
         try {
             System.out.println(fileBackedTaskManager.getPrioritizedTasks());
         } catch (TaskManagerBaseException e) {

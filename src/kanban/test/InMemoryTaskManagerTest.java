@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class InMemoryTaskManagerTest {
     private static TaskManager inMemoryTaskManager;
     private static Epic epic;
@@ -22,8 +25,19 @@ public class InMemoryTaskManagerTest {
     public void beforeEach() {
         inMemoryTaskManager = new InMemoryTaskManager();
         epic = new Epic("Epic test", "Epic test test");
+        epic.setStartTime(LocalDateTime.of(2024, 7, 11, 12, 30));
+        epic.setDuration(Duration.ofMinutes(30));
+
         subtask = new Subtask("Subtask test", "Subtask test test");
+        subtask.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
+        subtask.setDuration(Duration.ofMinutes(30));
+        subtask.setStatus(Status.NEW);
+
         task = new Task("Task test", "Task test test");
+        task.setStartTime(LocalDateTime.of(2024, 7, 1, 11, 30));
+        task.setDuration(Duration.ofMinutes(30));
+        task.setStatus(Status.NEW);
+
     }
 
     @Test
@@ -89,8 +103,16 @@ public class InMemoryTaskManagerTest {
     public void UpdateOperationTest() {
         //Тест обновления задач, эпиков и подзадач.
         Task newTask = new Task("New task", "New description");
+        newTask.setStartTime(LocalDateTime.of(2024, 7, 11, 11, 30));
+        newTask.setDuration(Duration.ofMinutes(30));
+
         Epic newEpic = new Epic("New task", "New description");
+        newEpic.setStartTime(LocalDateTime.of(2024, 7, 11, 12, 30));
+        newEpic.setDuration(Duration.ofMinutes(30));
+
         Subtask newSubtask = new Subtask("New task", "New description");
+        newSubtask.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
+        newSubtask.setDuration(Duration.ofMinutes(30));
 
         newTask.setId(task.getId());
         newEpic.setId(epic.getId());
@@ -98,6 +120,10 @@ public class InMemoryTaskManagerTest {
         newSubtask.setMyEpic(newEpic.getId());
         newEpic.setSubTasks(newSubtask.getId());
         newSubtask.setStatus(Status.NEW);
+
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createSubTask(subtask, epic);
+        inMemoryTaskManager.createEpic(epic);
 
         inMemoryTaskManager.updateTask(task.getId(), newTask);
         inMemoryTaskManager.updateEpic(epic.getId(), newEpic);
