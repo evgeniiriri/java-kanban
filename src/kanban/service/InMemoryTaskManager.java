@@ -6,21 +6,14 @@ import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.taskexception.DateTimeTaskManagerException;
 import kanban.service.taskexception.TaskManagerBaseException;
-import kanban.service.tasklist.Node;
-
-import java.awt.datatransfer.FlavorEvent;
-import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private static final Logger log = Logger.getLogger(InMemoryTaskManager.class.getName());
-
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     protected final HashMap<Integer, Subtask> subTaskHashMap = new HashMap<>();
@@ -44,7 +37,7 @@ public class InMemoryTaskManager implements TaskManager {
         return epicHashMap.get(id).getSubTasks().stream().map(subTaskHashMap::get).toList();
     }
 
-    public LocalDateTime getEndTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
+    private LocalDateTime getEndTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
         if (epic.getDuration().isZero() || epic.getDuration().isNegative()) {
             log.log(Level.SEVERE, "Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
             throw new DateTimeTaskManagerException("Нет возможности высчитать конец задачи, так как продолжительность не корректная.");
@@ -57,7 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
         return endTime.plus(epic.getDuration());
     }
 
-    public LocalDateTime getStartTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
+    private LocalDateTime getStartTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
         Optional<Subtask> subtask = getSubtasks(epic).stream()
                 .min(Comparator.comparing(Subtask::getStartTime));
         if (subtask.isPresent()) {
@@ -68,26 +61,23 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private List<Subtask> getSubtasks(Epic epic) {
+    public List<Subtask> getSubtasks(Epic epic) {
         return epic.getSubTasks().stream().map(subTaskHashMap::get).toList();
     }
 
-    public Duration getDurationForEpic(Epic epic) {
+    private Duration getDurationForEpic(Epic epic) {
         int duration = 0;
         for (int id : epic.getSubTasks()) {
             duration += (int) subTaskHashMap.get(id).getDuration().toMinutes();
         }
         return Duration.ofMinutes(duration);
     }
-
-    public TreeSet<Task> getPrioritizedTasks() throws DateTimeTaskManagerException {
-        if (sortedPrioritizedTasks == null) {
-            throw new DateTimeTaskManagerException("Список приоритизированных задач пуст.");
-        }
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {
         return sortedPrioritizedTasks;
     }
 
-    public void add(Task task) throws DateTimeTaskManagerException {
+    private void add(Task task) throws DateTimeTaskManagerException {
         boolean havFreeTimeForTask = sortedPrioritizedTasks.stream().noneMatch(task1 -> validationTime(task, task1));
 
         if (havFreeTimeForTask) {
@@ -95,10 +85,9 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             throw new DateTimeTaskManagerException("В это время выполняется другая задача.");
         }
-
     }
 
-    public boolean validationTime(Task taskAdded, Task taskSecond) {
+    private boolean validationTime(Task taskAdded, Task taskSecond) {
         return taskAdded.getStartTime().isBefore(taskSecond.getEndTime())
                 && taskAdded.getEndTime().isAfter(taskSecond.getStartTime());
     }
@@ -262,10 +251,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return;
         }
-        epicHashMap.put(id, epic);
+        epic.setSubTasks(epicHashMap.get(id).getSubTasks());
         epic.setId(id);
         setStatus(epic.getId());
-        this.id++;
+        epicHashMap.put(id, epic);
         try {
             epic.setStartTime(getStartTimeForEpic(epic));
             epic.setDuration(getDurationForEpic(epic));
@@ -329,7 +318,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
             subTaskHashMap.remove(subID);
         }
-        if (inMemoryHistoryManager.getHistory().size() > 1) {
+        if (inMemoryHistoryManager.getHistory().size() >= 1) {
             inMemoryHistoryManager.remove(id);
         }
         epicHashMap.remove(id);

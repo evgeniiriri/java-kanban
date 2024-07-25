@@ -1,6 +1,7 @@
 package kanban.test;
 
 import kanban.model.Epic;
+import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.FileBackedTaskManager;
@@ -10,6 +11,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +51,20 @@ class FileBackedTaskManagerTest {
     @Test
     public void shouldWriteAndReadeTasksAndHistoryFromStorage() {
         Task testTask = new Task("Task test", "Task test test");
+        testTask.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
+        testTask.setDuration(Duration.ofMinutes(30));
+        testTask.setStatus(Status.IN_PROGRESS);
+
         Epic testEpic = new Epic("Epic test", "Epic test test");
+        testEpic.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
+        testEpic.setDuration(Duration.ofMinutes(30));
+        testEpic.setStatus(Status.IN_PROGRESS);
+
         Subtask testSubtask = new Subtask("Subtask test", "Subtask test test");
+        testSubtask.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
+        testSubtask.setDuration(Duration.ofMinutes(30));
+        testSubtask.setStatus(Status.IN_PROGRESS);
+
         fbtm.createTask(testTask);
         fbtm.createEpic(testEpic);
         fbtm.createSubTask(testSubtask, testEpic);
@@ -66,17 +81,17 @@ class FileBackedTaskManagerTest {
             while ((line = bft.readLine()) != null) {
                 lines.add(line);
             }
-            Assertions.assertEquals("TASK,0,Task test,NEW,Task test test", lines.get(1));
+            Assertions.assertEquals("TASK;0;Task test;NEW;Task test test;2024-07-11 13:30;30", lines.get(1));
             lines.clear();
             while ((line = bfe.readLine()) != null) {
                 lines.add(line);
             }
-            Assertions.assertEquals("EPIC,1,Epic test,NEW,Epic test test,[2]", lines.get(1));
+            Assertions.assertEquals("EPIC;1;Epic test;NEW;Epic test test;2024-07-11 13:30;30;[2]", lines.get(1));
             lines.clear();
             while ((line = bfs.readLine()) != null) {
                 lines.add(line);
             }
-            Assertions.assertEquals("SUBTASK,2,Subtask test,NEW,Subtask test test,1", lines.get(1));
+            Assertions.assertEquals("SUBTASK;2;Subtask test;NEW;Subtask test test;2024-07-11 13:30;30;1", lines.get(1));
             lines.clear();
             while ((line = bfh.readLine()) != null) {
                 lines.add(line);

@@ -3,10 +3,8 @@ import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.*;
-import kanban.service.taskexception.TaskManagerBaseException;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -46,7 +44,7 @@ public class Main {
         fileBackedTaskManager.createSubTask(subtask1, epic);
         fileBackedTaskManager.createSubTask(subtask2, epic);
 
-        printMenu(fileBackedTaskManager, epic);
+        printMenu(fileBackedTaskManager);
 
         Task taskNew = new Task("Task New", "new new new");
         taskNew.setStartTime(LocalDateTime.of(2024, 7, 7, 10, 00));
@@ -63,24 +61,25 @@ public class Main {
         fileBackedTaskManager.updateTask(task1.getId(), taskNew);
         fileBackedTaskManager.updateSubTask(subtask1.getId(), subtaskNew);
 
-        printMenu(fileBackedTaskManager, epic);
+        printMenu(fileBackedTaskManager);
 
     }
 
-    public static void printMenu(FileBackedTaskManager fileBackedTaskManager, Epic epic) {
-        System.out.println(fileBackedTaskManager.getAllTask());
-        System.out.println(fileBackedTaskManager.getAllSubTask(epic.getId()));
-        System.out.println(fileBackedTaskManager.getEpic(epic.getId()));
-        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getStartTime());
-        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getEndTime());
-        System.out.println(fileBackedTaskManager.getEpic(epic.getId()).getDuration());
-
-
-        try {
-            System.out.println(fileBackedTaskManager.getPrioritizedTasks());
-        } catch (TaskManagerBaseException e) {
-            System.out.println("sss");
+    public static void printMenu(FileBackedTaskManager fileBackedTaskManager) {
+        System.out.println("Задачи " + System.lineSeparator());
+        for (Task task : fileBackedTaskManager.getAllTask()) {
+            System.out.println(task + System.lineSeparator());
         }
+        System.out.println("Эпики и подзадачи "  + System.lineSeparator());
+        for (Epic epic : fileBackedTaskManager.getAllEpic()) {
+            System.out.println(epic  + System.lineSeparator());
+            for (Subtask subtask : fileBackedTaskManager.getSubtasks(epic)) {
+                System.out.println(subtask  + System.lineSeparator());
+            }
+        }
+        System.out.println("Приоритет задач "  + System.lineSeparator());
+        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+
     }
 
 }

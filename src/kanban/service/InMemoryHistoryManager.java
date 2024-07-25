@@ -53,5 +53,6 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         //Получаем нужную ноду по индексу из HashMap и удаляем ноду.
         Node<T> n = linkedTasksMap.get(id);
         linkedListTasks.removeNode(n);
+        history = List.copyOf(linkedListTasks.getTasks());
     }
 }
