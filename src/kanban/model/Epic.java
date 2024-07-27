@@ -1,13 +1,21 @@
 package kanban.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task implements Cloneable {
-    private final ArrayList<Integer> idSubTask = new ArrayList<>();
+    private ArrayList<Integer> idSubTask = new ArrayList<>();
+    //Инициализируем переменную времени, что б избежать ошибки.
+    private LocalDateTime endTime = LocalDateTime.of(1, 1, 1, 1, 1, 1);
 
     public Epic(String name, String description) {
         super(name, description);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return this.endTime;
     }
 
     public ArrayList<Integer> getSubTasks() {
@@ -22,26 +30,31 @@ public class Epic extends Task implements Cloneable {
         this.idSubTask.add(idSubTask);
     }
 
-    public void deleteSubtaskID(int id) {
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void deleteSubtask(int id) {
         if (idSubTask.contains(id)) {
-            idSubTask.remove(id);
+            idSubTask.remove(idSubTask.indexOf(id));
         }
     }
 
     @Override
     public Epic clone() throws CloneNotSupportedException {
-        return (Epic) super.clone();
+        Epic cloneEpic = (Epic) super.clone();
+        cloneEpic.idSubTask = (ArrayList<Integer>) idSubTask.clone();
+        //Добавил клонирование списка подзадач, но я не понял, как клонировать status.
+        //Но я думаю это и не нужно, так как статус либо высчитывается программой или
+        //устанавливается при создании Task.
+        //Теперь список подзадач защищен от вмешательства 8)
+        return cloneEpic;
     }
 
     @Override
     public String toString() {
-        String subtaskSize = String.valueOf(idSubTask.size());
-        return "Epic{" +
-                "status=" + status +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id + '\'' +
-                ", size='" + subtaskSize + '}';
+        return String.format("EPIC;%s;%s;%s;%s;%s;%s;%s",
+                id, name, status, description, getStringDateTime(), getStringDurationMinutes(), idSubTask);
     }
 
     @Override

@@ -3,11 +3,12 @@ package kanban.service;
 import kanban.model.Epic;
 import kanban.model.Subtask;
 import kanban.model.Task;
-
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
+    TreeSet<Task> getPrioritizedTasks();
     List<Task> getHistory();
 
     List<Task> getAllTask();
