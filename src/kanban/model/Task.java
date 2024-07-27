@@ -25,14 +25,14 @@ public class Task implements TaskInterface, Cloneable {
         return formatter;
     }
 
-    protected String getStrDateTime() {
+    protected String getStringDateTime() {
         if (startTime == null) {
             return "null";
         }
         return startTime.format(formatter);
     }
 
-    protected String getStrDurationMinutes() {
+    protected String getStringDurationMinutes() {
         if (duration == null) {
             return "null";
         }
@@ -132,6 +132,6 @@ public class Task implements TaskInterface, Cloneable {
     @Override
     public String toString() {
         return String.format("TASK;%s;%s;%s;%s;%s;%s",
-                id, name, status, description, getStrDateTime(), getStrDurationMinutes());
+                id, name, status, description, getStringDateTime(), getStringDurationMinutes());
     }
 }

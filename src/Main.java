@@ -1,5 +1,4 @@
 import kanban.model.Epic;
-import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.*;
@@ -45,27 +44,14 @@ public class Main {
         fileBackedTaskManager.createSubTask(subtask2, epic);
 
         printMenu(fileBackedTaskManager);
-
-        Task taskNew = new Task("Task New", "new new new");
-        taskNew.setStartTime(LocalDateTime.of(2024, 7, 7, 10, 00));
-        taskNew.setDuration(Duration.ofMinutes(60));
-        taskNew.setStatus(Status.IN_PROGRESS);
-        taskNew.setId(task1.getId());
-
-        Subtask subtaskNew = new Subtask("Sub new", "new new new");
-        subtaskNew.setStartTime(LocalDateTime.of(2024, 7, 6, 10, 00));
-        subtaskNew.setDuration(Duration.ofMinutes(120));
-        subtaskNew.setStatus(Status.IN_PROGRESS);
-        subtaskNew.setId(subtask1.getId());
-
-        fileBackedTaskManager.updateTask(task1.getId(), taskNew);
-        fileBackedTaskManager.updateSubTask(subtask1.getId(), subtaskNew);
+        System.out.println("Удаление задачи");
+        fileBackedTaskManager.deleteSubTask(subtask1.getId());
 
         printMenu(fileBackedTaskManager);
-
     }
 
     public static void printMenu(FileBackedTaskManager fileBackedTaskManager) {
+
         System.out.println("Задачи " + System.lineSeparator());
         for (Task task : fileBackedTaskManager.getAllTask()) {
             System.out.println(task + System.lineSeparator());
@@ -73,12 +59,13 @@ public class Main {
         System.out.println("Эпики и подзадачи "  + System.lineSeparator());
         for (Epic epic : fileBackedTaskManager.getAllEpic()) {
             System.out.println(epic  + System.lineSeparator());
-            for (Subtask subtask : fileBackedTaskManager.getSubtasks(epic)) {
+            for (Subtask subtask : fileBackedTaskManager.getSubTasksWithEpic(epic)) {
                 System.out.println(subtask  + System.lineSeparator());
             }
         }
         System.out.println("Приоритет задач "  + System.lineSeparator());
         System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+        System.out.println("История" + System.lineSeparator() + fileBackedTaskManager.getHistory());
 
     }
 

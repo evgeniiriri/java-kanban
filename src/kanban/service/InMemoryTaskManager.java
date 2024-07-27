@@ -6,6 +6,7 @@ import kanban.model.Subtask;
 import kanban.model.Task;
 import kanban.service.taskexception.DateTimeTaskManagerException;
 import kanban.service.taskexception.TaskManagerBaseException;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -51,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private LocalDateTime getStartTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
-        Optional<Subtask> subtask = getSubtasks(epic).stream()
+        Optional<Subtask> subtask = getSubTasksWithEpic(epic).stream()
                 .min(Comparator.comparing(Subtask::getStartTime));
         if (subtask.isPresent()) {
             return subtask.get().getStartTime();
@@ -61,9 +62,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public List<Subtask> getSubtasks(Epic epic) {
-        return epic.getSubTasks().stream().map(subTaskHashMap::get).toList();
-    }
 
     private Duration getDurationForEpic(Epic epic) {
         int duration = 0;
@@ -72,6 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return Duration.ofMinutes(duration);
     }
+
     @Override
     public TreeSet<Task> getPrioritizedTasks() {
         return sortedPrioritizedTasks;
@@ -172,6 +171,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
         inMemoryHistoryManager.add(subTaskHashMap.get(id));
         return subTaskHashMap.get(id);
+    }
+
+    public List<Subtask> getSubTasksWithEpic(Epic epic) {
+        for (int idSubtask : epic.getSubTasks()) {
+            inMemoryHistoryManager.add(subTaskHashMap.get(idSubtask));
+        }
+        return epic.getSubTasks().stream().map(subTaskHashMap::get).toList();
     }
 
     @Override
@@ -334,20 +340,17 @@ public class InMemoryTaskManager implements TaskManager {
         }
         Epic epic = epicHashMap.get(subTaskHashMap.get(id).getMyEpicId());
         Subtask subtask = subTaskHashMap.get(id);
-        if (epic.getStartTime().equals(subtask.getStartTime())) {
-            subTaskHashMap.remove(id);
-            epic.deleteSubtask(subtask.getId());
-            try {
-                epic.setStartTime(getStartTimeForEpic(epic));
-                epic.setDuration(getDurationForEpic(epic));
-                epic.setEndTime(getEndTimeForEpic(epic));
-            } catch (TaskManagerBaseException e) {
-                log.log(Level.SEVERE, e.getMessage());
-            }
-        } else {
-            epic.setDuration(epic.getDuration().minus(subtask.getDuration()));
-            epic.setEndTime(epic.getEndTime().minusMinutes(subtask.getDuration().toMinutes()));
-            subTaskHashMap.remove(id);
+        if (sortedPrioritizedTasks.contains(subtask)) {
+            sortedPrioritizedTasks.remove(subtask);
+        }
+        subTaskHashMap.remove(id);
+        epic.deleteSubtask(subtask.getId());
+        try {
+            epic.setStartTime(getStartTimeForEpic(epic));
+            epic.setDuration(getDurationForEpic(epic));
+            epic.setEndTime(getEndTimeForEpic(epic));
+        } catch (TaskManagerBaseException e) {
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 

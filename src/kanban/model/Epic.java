@@ -54,7 +54,7 @@ public class Epic extends Task implements Cloneable {
     @Override
     public String toString() {
         return String.format("EPIC;%s;%s;%s;%s;%s;%s;%s",
-                id, name, status, description, getStrDateTime(), getStrDurationMinutes(), idSubTask);
+                id, name, status, description, getStringDateTime(), getStringDurationMinutes(), idSubTask);
     }
 
     @Override
