@@ -50,9 +50,13 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime = epic.getStartTime();
         return endTime.plus(epic.getDuration());
     }
+    public List<Subtask> getEpicSubtask(Epic epic) {
+        //метод нужен для корректой работы истории.
+        return epic.getSubTasks().stream().map(subTaskHashMap::get).toList();
+    }
 
     private LocalDateTime getStartTimeForEpic(Epic epic) throws DateTimeTaskManagerException {
-        Optional<Subtask> subtask = getSubTasksWithEpic(epic).stream()
+        Optional<Subtask> subtask = getEpicSubtask(epic).stream()
                 .min(Comparator.comparing(Subtask::getStartTime));
         if (subtask.isPresent()) {
             return subtask.get().getStartTime();
@@ -172,7 +176,7 @@ public class InMemoryTaskManager implements TaskManager {
         inMemoryHistoryManager.add(subTaskHashMap.get(id));
         return subTaskHashMap.get(id);
     }
-
+    @Override
     public List<Subtask> getSubTasksWithEpic(Epic epic) {
         for (int idSubtask : epic.getSubTasks()) {
             inMemoryHistoryManager.add(subTaskHashMap.get(idSubtask));

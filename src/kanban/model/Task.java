@@ -13,7 +13,7 @@ public class Task implements TaskInterface, Cloneable {
     protected String description;
     protected Duration duration;
     protected LocalDateTime startTime;
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    protected transient  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Task(String name, String description) {
         this.name = name;

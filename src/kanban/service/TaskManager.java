@@ -8,6 +8,8 @@ import java.util.TreeSet;
 
 public interface TaskManager {
 
+    public List<Subtask> getSubTasksWithEpic(Epic epic);
+
     TreeSet<Task> getPrioritizedTasks();
     List<Task> getHistory();
 
