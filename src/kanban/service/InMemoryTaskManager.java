@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 public class InMemoryTaskManager implements TaskManager {
     private static final Logger log = Logger.getLogger(InMemoryTaskManager.class.getName());
@@ -220,6 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setStatus(Status.NEW);
         epic.setId(this.id);
         epicHashMap.put(this.id, epic);
+        this.id++;
         if (!epic.getSubTasks().isEmpty()) {
             try {
                 epic.setStartTime(getStartTimeForEpic(epic));
@@ -229,7 +229,6 @@ public class InMemoryTaskManager implements TaskManager {
                 log.log(Level.SEVERE, e.getMessage());
             }
         }
-        this.id++;
     }
 
     @Override
@@ -242,14 +241,16 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setId(this.id);
         epic.setSubTasks(subTask.getId());
         subTaskHashMap.put(this.id, subTask);
-        try {
-            epic.setStartTime(getStartTimeForEpic(epic));
-            epic.setDuration(getDurationForEpic(epic));
-            epic.setEndTime(getEndTimeForEpic(epic));
-            this.id++;
-            add(subTask);
-        } catch (TaskManagerBaseException e) {
-            log.log(Level.INFO, e.getMessage() + System.lineSeparator() + subTask);
+        this.id++;
+        if (epicHashMap.containsKey(subTask.getMyEpicId())) {
+            try {
+                epic.setStartTime(getStartTimeForEpic(epic));
+                epic.setDuration(getDurationForEpic(epic));
+                epic.setEndTime(getEndTimeForEpic(epic));
+                add(subTask);
+            } catch (TaskManagerBaseException e) {
+                log.log(Level.INFO, e.getMessage() + System.lineSeparator() + subTask);
+            }
         }
     }
 
