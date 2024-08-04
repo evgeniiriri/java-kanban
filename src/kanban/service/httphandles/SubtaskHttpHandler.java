@@ -35,7 +35,6 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                         int id = getId(path.replaceFirst("^/api/v1/subtask/", ""));
                         if (id >= 0) {
                             Optional<Subtask> subtask = Optional.ofNullable(manager.getSubTask(id));
-                            //Возможно нужно сделать отдельный метод ответа.
                             if (subtask.isPresent()) {
                                 //Обработка случая с несущетвующим ID.
                                 sendText(exchange, gson.toJson(subtask.get()));

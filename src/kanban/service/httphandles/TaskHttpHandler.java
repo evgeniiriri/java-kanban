@@ -39,7 +39,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                                 //Обработка случая с несущетвующим ID.
                                 sendText(exchange, gson.toJson(task.get()));
                             } else {
-                                sendNotFound(exchange); //Возможно нужно сделать отдельный метод ответа.
+                                sendNotFound(exchange);
                             }
                         } else {
                             sendNotFound(exchange);

@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 public class BaseHttpHandler {
 
     protected FileBackedTaskManager manager;
-
     protected Gson gson = getGson();
     private final Logger log = Logger.getLogger(BaseHttpHandler.class.getName());
     public BaseHttpHandler(FileBackedTaskManager manager) {

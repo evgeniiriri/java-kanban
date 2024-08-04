@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
 
-
     private final Logger log = Logger.getLogger(TaskHttpHandler.class.getName());
 
     public EpicHttpHandler(FileBackedTaskManager manager) {
@@ -45,7 +44,7 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                                 break;
                             } else {
                                 sendNotFound(exchange);
-                                break;//Возможно нужно сделать отдельный метод ответа.
+                                break;
                             }
                         } else {
                             sendNotFound(exchange);
@@ -56,7 +55,6 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                         int id = getId(path.replaceFirst("^/api/v1/epic/", "").replaceFirst("/subtasks/", ""));
                         if (id >= 0) {
                             Optional<Epic> epic = Optional.ofNullable(manager.getEpic(id));
-                            //Возможно нужно сделать отдельный метод ответа.
                             if (epic.isPresent()) {
                                 //Обработка случая с несущетвующим ID.
                                 List<Subtask> subtasks = manager.getAllSubTask(epic.get().getId());
