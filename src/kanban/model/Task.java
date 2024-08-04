@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task implements TaskInterface, Cloneable {
-    protected boolean view;
+
     protected Status status;
     protected String name;
     protected int id;
@@ -14,11 +14,9 @@ public class Task implements TaskInterface, Cloneable {
     protected Duration duration;
     protected LocalDateTime startTime;
     protected transient  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.view = false;
     }
 
     public DateTimeFormatter getTaskDateTimeFormatter() {
@@ -29,7 +27,7 @@ public class Task implements TaskInterface, Cloneable {
         if (startTime == null) {
             return "null";
         }
-        return startTime.format(formatter);
+        return startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
     protected String getStringDurationMinutes() {
@@ -64,10 +62,6 @@ public class Task implements TaskInterface, Cloneable {
         return Objects.hash(status, name, id, description);
     }
 
-    @Override
-    public boolean isView() {
-        return view;
-    }
 
     @Override
     public String getName() {

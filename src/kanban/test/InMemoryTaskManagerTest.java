@@ -125,9 +125,9 @@ public class InMemoryTaskManagerTest {
         newSubtask.setMyEpic(newEpic.getId());
         newSubtask.setStatus(Status.NEW);
 
-        inMemoryTaskManager.updateTask(task.getId(), newTask);
-        inMemoryTaskManager.updateEpic(epic.getId(), newEpic);
-        inMemoryTaskManager.updateSubTask(subtask.getId(), newSubtask);
+        inMemoryTaskManager.updateTask(newTask);
+        inMemoryTaskManager.updateEpic(newEpic);
+        inMemoryTaskManager.updateSubTask(newSubtask);
 
         Assertions.assertEquals("New task",
                 inMemoryTaskManager.getTask(newTask.getId()).getName());
@@ -165,9 +165,11 @@ public class InMemoryTaskManagerTest {
         Subtask subtask2 = new Subtask("Subtask test", "Subtask test test");
         subtask2.setStartTime(LocalDateTime.of(2024, 7, 11, 13, 30));
         subtask2.setDuration(Duration.ofMinutes(30));
+        subtask2.setId(subtask1.getId());
+        subtask2.setMyEpic(subtask1.getMyEpicId());
         subtask2.setStatus(Status.IN_PROGRESS);
 
-        inMemoryTaskManager.updateSubTask(subtask1.getId(), subtask2);
+        inMemoryTaskManager.updateSubTask(subtask2);
 
         Assertions.assertEquals(Status.IN_PROGRESS, inMemoryTaskManager.getEpic(epic.getId()).getStatus());
     }

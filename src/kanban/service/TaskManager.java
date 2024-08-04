@@ -10,6 +10,8 @@ public interface TaskManager {
 
     public List<Subtask> getSubTasksWithEpic(Epic epic);
 
+    public void createSubTask(Subtask subTask);
+
     TreeSet<Task> getPrioritizedTasks();
     List<Task> getHistory();
 
@@ -39,11 +41,11 @@ public interface TaskManager {
 
     void createSubTask(Subtask subTask, Epic epic);
 
-    void updateTask(int id, Task task);
+    void updateTask(Task task);
 
-    void updateEpic(int id, Epic epic);
+    void updateEpic(Epic epic);
 
-    void updateSubTask(int id, Subtask subTask);
+    void updateSubTask(Subtask subTask);
 
     void deleteTask(int id);
 

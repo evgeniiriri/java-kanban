@@ -1,4 +1,4 @@
-package kanban.service.HttpHandles;
+package kanban.service.httphandles;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,28 +6,25 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
-import kanban.model.Task;
 import kanban.service.FileBackedTaskManager;
-import kanban.service.Manager;
-import kanban.service.TaskManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BaseHttpHandler {
 
-    private final File file = new File("storage.csv");
-    protected final FileBackedTaskManager manager = Manager.getFileBackedManager(file);
+    protected FileBackedTaskManager manager;
+
     protected Gson gson = getGson();
     private final Logger log = Logger.getLogger(BaseHttpHandler.class.getName());
+    public BaseHttpHandler(FileBackedTaskManager manager) {
+        this.manager = manager;
+    }
 
     protected void sendText(HttpExchange httpExchange, String text) throws IOException {
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
@@ -37,17 +34,39 @@ public class BaseHttpHandler {
         httpExchange.close();
     }
 
+    protected void sendOk(HttpExchange httpExchange) throws IOException {
+        httpExchange.sendResponseHeaders(200, 0);
+        httpExchange.close();
+    }
+
+    protected void sendCreate(HttpExchange httpExchange) throws IOException {
+        httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        httpExchange.sendResponseHeaders(201, 0);
+        httpExchange.close();
+    }
+
     protected void sendNotFound(HttpExchange httpExchange) throws IOException {
         log.log(Level.SEVERE, "Задача не была найдена. 404.");
         httpExchange.sendResponseHeaders(404, 0);
         httpExchange.close();
     }
 
-    protected void sendHasInteractions(HttpExchange httpExchange, String text) throws IOException {
+    protected void sendHasInteractions(HttpExchange httpExchange) throws IOException {
         log.log(Level.SEVERE, "Задачи пересекаются. 406.");
         httpExchange.sendResponseHeaders(406, 0);
         httpExchange.close();
+    }
 
+    protected void sendServerError(HttpExchange httpExchange) throws IOException {
+        log.log(Level.SEVERE, "Серверная ошибка. 500");
+        httpExchange.sendResponseHeaders(500, 0);
+        httpExchange.close();
+    }
+
+    protected void sendNotCorrectMethod(HttpExchange httpExchange) throws IOException {
+        log.log(Level.WARNING, httpExchange.getRequestMethod() + " не облуживается. 406");
+        httpExchange.sendResponseHeaders(406, 0);
+        httpExchange.close();
     }
 
     public Gson getGson() {
@@ -56,8 +75,6 @@ public class BaseHttpHandler {
         gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
         return gsonBuilder.create();
     }
-
-
 }
 
 class LocalDateAdapter extends TypeAdapter<LocalDateTime> {

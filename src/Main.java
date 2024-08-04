@@ -7,14 +7,26 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-
-    HttpTaskServer httpTaskServer = new HttpTaskServer();
-    httpTaskServer.start();
-
+        Scanner scanner = new Scanner(System.in);
+        HttpTaskServer httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
+        System.out.println("Введите 0 для остановки сервера." + System.lineSeparator() + "Введите help для вызова меню.");
+        while (true) {
+            String input = scanner.nextLine();
+            switch (input) {
+                case "0":
+                    httpTaskServer.stop();
+                    break;
+                case "help":
+                    System.out.println("Введите 0 для остановки сервера.");
+            }
+            break;
+        }
 
 
 //
@@ -59,7 +71,7 @@ public class Main {
     }
 
 //    public static void printMenu(TaskManager fileBackedTaskManager) {
-
+//
 //        System.out.println("Задачи " + System.lineSeparator());
 //        for (Task task : fileBackedTaskManager.getAllTask()) {
 //            System.out.println(task + System.lineSeparator());
@@ -74,7 +86,7 @@ public class Main {
 //        System.out.println("Приоритет задач "  + System.lineSeparator());
 //        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
 //        System.out.println("История" + System.lineSeparator() + fileBackedTaskManager.getHistory());
-
+//
 //    }
 
 }

@@ -4,7 +4,9 @@ import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
+import kanban.service.taskexception.DateTimeTaskManagerException;
 import kanban.service.taskexception.ManagerSaveException;
+import kanban.service.taskexception.TaskManagerBaseException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,9 +16,12 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private static final Logger log = Logger.getLogger(FileBackedTaskManager.class.getName());
@@ -127,7 +132,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     }
                 }
             }
-
+            //Загрузим приоритетные задачи.
+            fbtm.taskHashMap.values().forEach(task -> {
+                try {
+                    fbtm.add(task);
+                } catch (TaskManagerBaseException e) {
+                    log.log(Level.WARNING, e.getMessage());
+                }
+            });
+            fbtm.subTaskHashMap.values().forEach(subtask -> {
+                try {
+                    fbtm.add(subtask);
+                } catch (TaskManagerBaseException e) {
+                    log.log(Level.WARNING, e.getMessage());
+                }
+            });
         } catch (IOException e) {
             log.log(Level.SEVERE, "Ошибка загрузки задач из хранилища." + System.lineSeparator() + e.getMessage());
         }
@@ -355,9 +374,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void createSubTask(Subtask subTask, Epic epic) {
-        super.createSubTask(subTask, epic);
+    public void createSubTask(Subtask subTask) {
         try {
+            super.createSubTask(subTask);
             save();
         } catch (ManagerSaveException e) {
             log.log(Level.WARNING, "Не удалось сохранить новый subtask.");
@@ -365,8 +384,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void updateTask(int id, Task task) {
-        super.updateTask(id, task);
+    public void updateTask(Task task) {
+        super.updateTask(task);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -375,8 +394,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void updateEpic(int id, Epic epic) {
-        super.updateEpic(id, epic);
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -385,8 +404,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void updateSubTask(int id, Subtask subTask) {
-        super.updateSubTask(id, subTask);
+    public void updateSubTask(Subtask subTask) {
+        super.updateSubTask(subTask);
         try {
             save();
         } catch (ManagerSaveException e) {

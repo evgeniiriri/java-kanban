@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class InMemoryTaskManager implements TaskManager {
     private static final Logger log = Logger.getLogger(InMemoryTaskManager.class.getName());
@@ -24,6 +25,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         log.log(Level.INFO, "Инициализация " + InMemoryTaskManager.class.getName());
+    }
+
+    public boolean isExistsTask(Task task) {
+        return taskHashMap.values().stream().anyMatch(task1 -> task.getId() == task1.getId());
+    }
+    public boolean isExistsSubtask(Subtask task) {
+        return subTaskHashMap.values().stream().anyMatch(task1 -> task.getId() == task1.getId());
+    }
+    public boolean isExistsEpic(Epic task) {
+        return epicHashMap.values().stream().anyMatch(task1 -> task.getId() == task1.getId());
     }
 
     protected void setIdForManager(int id) {
@@ -80,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
         return sortedPrioritizedTasks;
     }
 
-    private void add(Task task) throws DateTimeTaskManagerException {
+    protected void add(Task task) throws DateTimeTaskManagerException {
         boolean havFreeTimeForTask = sortedPrioritizedTasks.stream().noneMatch(task1 -> validationTime(task, task1));
 
         if (havFreeTimeForTask) {
@@ -243,12 +254,34 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(int id, Task task) {
+    public void createSubTask(Subtask subTask) {
+        if (subTaskHashMap.containsValue(subTask) || epicHashMap.containsKey(id)) {
+            return;
+        }
+        Epic epic = epicHashMap.get(subTask.getMyEpicId());
+        subTask.setMyEpic(epic.getId());
+        subTask.setStatus(Status.NEW);
+        subTask.setId(this.id);
+        epic.setSubTasks(subTask.getId());
+        subTaskHashMap.put(this.id, subTask);
+        try {
+            epic.setStartTime(getStartTimeForEpic(epic));
+            epic.setDuration(getDurationForEpic(epic));
+            epic.setEndTime(getEndTimeForEpic(epic));
+            this.id++;
+            add(subTask);
+        } catch (TaskManagerBaseException e) {
+            log.log(Level.INFO, e.getMessage() + System.lineSeparator() + subTask);
+        }
+    }
+
+    @Override
+    public void updateTask(Task task) {
         if (task == null) {
             return;
         }
-        task.setId(id);
-        taskHashMap.put(id, task);
+        task.setId(task.getId());
+        taskHashMap.put(task.getId(), task);
         try {
             add(task);
         } catch (TaskManagerBaseException e) {
@@ -257,14 +290,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(int id, Epic epic) {
+    public void updateEpic(Epic epic) {
         if (epic == null) {
             return;
         }
-        epic.setSubTasks(epicHashMap.get(id).getSubTasks());
-        epic.setId(id);
         setStatus(epic.getId());
-        epicHashMap.put(id, epic);
+        epicHashMap.put(epic.getId(), epic);
         try {
             epic.setStartTime(getStartTimeForEpic(epic));
             epic.setDuration(getDurationForEpic(epic));
@@ -275,14 +306,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTask(int id, Subtask subtask) {
+    public void updateSubTask(Subtask subtask) {
         if (subtask == null) {
             return;
         }
-        Subtask subtaskOld = subTaskHashMap.get(id);
-        Epic epic = epicHashMap.get(subtaskOld.getMyEpicId());
+        Subtask subtaskOld = subTaskHashMap.get(subtask.getId());
+        Epic epic = epicHashMap.get(subtask.getMyEpicId());
 
-        subTaskHashMap.put(id, subtask);
+        subTaskHashMap.put(subtask.getId(), subtask);
         setStatus(epic.getId());
         try {
             //Пересчет времени для эпика, если подзадача имеет другое время.
