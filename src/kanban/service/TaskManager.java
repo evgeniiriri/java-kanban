@@ -3,11 +3,16 @@ package kanban.service;
 import kanban.model.Epic;
 import kanban.model.Subtask;
 import kanban.model.Task;
-
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
+    public List<Subtask> getSubTasksWithEpic(Epic epic);
+
+    public void createSubTask(Subtask subTask);
+
+    TreeSet<Task> getPrioritizedTasks();
     List<Task> getHistory();
 
     List<Task> getAllTask();
@@ -36,11 +41,11 @@ public interface TaskManager {
 
     void createSubTask(Subtask subTask, Epic epic);
 
-    void updateTask(int id, Task task);
+    void updateTask(Task task);
 
-    void updateEpic(int id, Epic epic);
+    void updateEpic(Epic epic);
 
-    void updateSubTask(int id, Subtask subTask);
+    void updateSubTask(Subtask subTask);
 
     void deleteTask(int id);
 
