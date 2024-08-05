@@ -38,7 +38,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
             linkedTasksMap.put(clon.getId(), linkedListTasks.getLastNode());
             history = List.copyOf(linkedListTasks.getTasks());
         } catch (CloneNotSupportedException e) {
-            log.log(Level.SEVERE, "Не получилось сделать копию Task для InMemoryHistoryManager.");
+            log.log(Level.SEVERE, "Не получилось сделать копию задачи - " + task + System.lineSeparator() + e.getMessage());
             //Будем логировать ошибку.
         }
     }

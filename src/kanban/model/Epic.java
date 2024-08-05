@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task implements Cloneable {
-    private ArrayList<Integer> idSubTask = new ArrayList<>();
+    private ArrayList<Integer> idSubTasks = new ArrayList<>();
     //Инициализируем переменную времени, что б избежать ошибки.
     private LocalDateTime endTime = LocalDateTime.of(1, 1, 1, 1, 1, 1);
 
@@ -19,15 +19,15 @@ public class Epic extends Task implements Cloneable {
     }
 
     public ArrayList<Integer> getSubTasks() {
-        return this.idSubTask;
+        return this.idSubTasks;
     }
 
     public void setSubTasks(ArrayList<Integer> idSubTask) {
-        this.idSubTask.addAll(idSubTask);
+        this.idSubTasks.addAll(idSubTask);
     }
 
     public void setSubTasks(int idSubTask) {
-        this.idSubTask.add(idSubTask);
+        this.idSubTasks.add(idSubTask);
     }
 
     public void setEndTime(LocalDateTime endTime) {
@@ -35,15 +35,15 @@ public class Epic extends Task implements Cloneable {
     }
 
     public void deleteSubtask(int id) {
-        if (idSubTask.contains(id)) {
-            idSubTask.remove(idSubTask.indexOf(id));
+        if (idSubTasks.contains(id)) {
+            idSubTasks.remove(idSubTasks.indexOf(id));
         }
     }
 
     @Override
     public Epic clone() throws CloneNotSupportedException {
         Epic cloneEpic = (Epic) super.clone();
-        cloneEpic.idSubTask = (ArrayList<Integer>) idSubTask.clone();
+        cloneEpic.idSubTasks = (ArrayList<Integer>) idSubTasks.clone();
         //Добавил клонирование списка подзадач, но я не понял, как клонировать status.
         //Но я думаю это и не нужно, так как статус либо высчитывается программой или
         //устанавливается при создании Task.
@@ -54,7 +54,7 @@ public class Epic extends Task implements Cloneable {
     @Override
     public String toString() {
         return String.format("EPIC;%s;%s;%s;%s;%s;%s;%s",
-                id, name, status, description, getStringDateTime(), getStringDurationMinutes(), idSubTask);
+                id, name, status, description, getStringDateTime(), getStringDurationMinutes(), idSubTasks);
     }
 
     @Override
@@ -63,11 +63,11 @@ public class Epic extends Task implements Cloneable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return idSubTask.equals(epic.idSubTask);
+        return idSubTasks.equals(epic.idSubTasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), idSubTask);
+        return Objects.hash(super.hashCode(), idSubTasks);
     }
 }
